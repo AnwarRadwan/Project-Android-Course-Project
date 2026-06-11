@@ -6,4 +6,12 @@
     </style>
 
     <style name="Theme._1222275_1220495_CourseProject" parent="Base.Theme._1222275_1220495_CourseProject" />
+
+    <!-- Full-screen theme for SplashActivity -->
+    <style name="Theme.Splash" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@color/dark_green</item>
+        <item name="android:statusBarColor">@color/dark_green</item>
+        <item name="android:navigationBarColor">@color/dark_green</item>
+    </style>
 </resources>

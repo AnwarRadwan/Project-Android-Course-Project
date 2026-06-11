@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Travel Planner Theme Colors -->
+    <color name="bg_light">#FBF5DD</color>
+    <color name="secondary">#E7E1B1</color>
+    <color name="primary_green">#306D29</color>
+    <color name="dark_green">#0D530E</color>
 </resources>

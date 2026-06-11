@@ -1,0 +1,124 @@
+{
+  "trips": [
+    {
+      "id": 101,
+      "destination": "Istanbul",
+      "country": "Turkey",
+      "duration_days": 5,
+      "price": 750,
+      "rating": 4.7,
+      "description": "Explore the historical wonders of Istanbul, where East meets West across the Bosphorus strait.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/800px-Empire_State_Building_%28aerial_view%29.jpg"
+    },
+    {
+      "id": 102,
+      "destination": "Paris",
+      "country": "France",
+      "duration_days": 7,
+      "price": 1200,
+      "rating": 4.8,
+      "description": "Discover the City of Light with its iconic Eiffel Tower, world-class museums, and exquisite cuisine.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Tour_eiffel_at_sunrise_from_the_trocadero.jpg/800px-Tour_eiffel_at_sunrise_from_the_trocadero.jpg"
+    },
+    {
+      "id": 103,
+      "destination": "Tokyo",
+      "country": "Japan",
+      "duration_days": 10,
+      "price": 1800,
+      "rating": 4.9,
+      "description": "Immerse yourself in Japan's vibrant capital, blending ultramodern technology with ancient temples and culture.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Skyscrapers_of_Shinjuku_2009_January.jpg/800px-Skyscrapers_of_Shinjuku_2009_January.jpg"
+    },
+    {
+      "id": 104,
+      "destination": "New York",
+      "country": "USA",
+      "duration_days": 6,
+      "price": 1500,
+      "rating": 4.6,
+      "description": "Experience the Big Apple — Times Square, Central Park, the Statue of Liberty, and world-famous skyline.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Southwest_corner_of_Central_Park%2C_looking_east%2C_NYC.jpg/800px-Southwest_corner_of_Central_Park%2C_looking_east%2C_NYC.jpg"
+    },
+    {
+      "id": 105,
+      "destination": "Rome",
+      "country": "Italy",
+      "duration_days": 5,
+      "price": 950,
+      "rating": 4.7,
+      "description": "Walk through millennia of history in the Eternal City — the Colosseum, Vatican, and incredible Italian food.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Colosseum_in_Rome%2C_Italy_-_April_2007.jpg/800px-Colosseum_in_Rome%2C_Italy_-_April_2007.jpg"
+    },
+    {
+      "id": 106,
+      "destination": "Barcelona",
+      "country": "Spain",
+      "duration_days": 6,
+      "price": 900,
+      "rating": 4.6,
+      "description": "Enjoy Gaudí's masterpieces, vibrant La Rambla, sunny beaches, and tapas in this stunning Mediterranean city.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Sagrada_Familia_01.jpg/800px-Sagrada_Familia_01.jpg"
+    },
+    {
+      "id": 107,
+      "destination": "Dubai",
+      "country": "UAE",
+      "duration_days": 4,
+      "price": 1100,
+      "rating": 4.5,
+      "description": "Marvel at futuristic architecture, the world's tallest building, luxury shopping, and desert adventures.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Burj_Khalifa.jpg/800px-The_Burj_Khalifa.jpg"
+    },
+    {
+      "id": 108,
+      "destination": "Sydney",
+      "country": "Australia",
+      "duration_days": 8,
+      "price": 2000,
+      "rating": 4.8,
+      "description": "Discover the Opera House, Harbour Bridge, stunning beaches, and the unique Australian wildlife.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Sydney_Australia._%2821339175489%29.jpg/800px-Sydney_Australia._%2821339175489%29.jpg"
+    },
+    {
+      "id": 109,
+      "destination": "Santorini",
+      "country": "Greece",
+      "duration_days": 5,
+      "price": 1300,
+      "rating": 4.9,
+      "description": "Relax on the stunning volcanic island with iconic white-washed buildings, crystal-clear waters, and breathtaking sunsets.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Santorini_island_%28Thira%29.jpg/800px-Santorini_island_%28Thira%29.jpg"
+    },
+    {
+      "id": 110,
+      "destination": "Petra",
+      "country": "Jordan",
+      "duration_days": 3,
+      "price": 600,
+      "rating": 4.8,
+      "description": "Explore the ancient rose-red city carved into rock, one of the world's most spectacular archaeological sites.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Petra_Jordan_BW_21.JPG/800px-Petra_Jordan_BW_21.JPG"
+    },
+    {
+      "id": 111,
+      "destination": "Marrakech",
+      "country": "Morocco",
+      "duration_days": 4,
+      "price": 550,
+      "rating": 4.5,
+      "description": "Get lost in the colorful souks, stunning palaces, and vibrant street life of this magical Moroccan city.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Koutoubia-Mosque.jpg/800px-Koutoubia-Mosque.jpg"
+    },
+    {
+      "id": 112,
+      "destination": "Bali",
+      "country": "Indonesia",
+      "duration_days": 9,
+      "price": 1000,
+      "rating": 4.7,
+      "description": "Find tranquility in Bali's lush rice terraces, ancient temples, vibrant arts scene, and world-class surf breaks.",
+      "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Pura_Ulun_Danu_Bratan%2C_Bali.jpg/800px-Pura_Ulun_Danu_Bratan%2C_Bali.jpg"
+    }
+  ]
+}

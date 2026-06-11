@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">1222275_1220495_CourseProject</string>
+    <string name="app_name">Travel Planner</string>
+    <string name="intro_title">Travel Planner</string>
+    <string name="intro_description">Your ultimate travel companion. Discover amazing destinations, plan your perfect trip, and explore the world with confidence. Connect to load the latest travel packages curated just for you.</string>
+    <string name="btn_connect">Connect</string>
+    <string name="loading">Loading trips…</string>
+    <string name="success_message">Trips loaded successfully!</string>
+    <string name="error_message">Failed to load trips. Please check your connection.</string>
 </resources>
