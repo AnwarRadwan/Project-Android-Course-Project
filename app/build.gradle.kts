@@ -4,16 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.a1222275_1220495_courseproject"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.a1222275_1220495_courseproject"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
