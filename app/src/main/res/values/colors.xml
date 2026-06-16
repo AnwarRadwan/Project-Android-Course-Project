@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- TravelGo Brand Colors -->
+    <color name="primary_green">#1F6F5F</color>
+    <color name="secondary_green">#2FA084</color>
+    <color name="accent_green">#6FCF97</color>
+    <color name="light_gray">#EEEEEE</color>
+
+    <!-- UI Usage -->
+    <color name="background_color">#FFFFFF</color>
+    <color name="text_primary">#1F6F5F</color>
+    <color name="text_secondary">#2FA084</color>
 </resources>

@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">1222275_1220495_CourseProject</string>
+    <string name="app_name">TravelGo</string>
+    <string name="tagline">Explore The World</string>
+    <string name="logo_desc">TravelGo Logo</string>
+
+    <!-- Login Strings -->
+    <string name="login_title">Welcome Back</string>
+    <string name="email_hint">Email Address</string>
+    <string name="password_hint">Password</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_sign_up_prompt">Don\'t have an account? Sign Up</string>
+
+    <!-- Register Strings -->
+    <string name="register_title">Create Account</string>
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="phone_hint">Phone Number</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="gender_label">Gender</string>
+    <string name="category_label">Major/Category</string>
+    <string name="btn_register">Sign Up</string>
+
+    <!-- Error Messages -->
+    <string name="err_invalid_email">Invalid email format</string>
+    <string name="err_short_name">Minimum 3 characters</string>
+    <string name="err_invalid_pass">Min 6 chars, 1 letter and 1 number</string>
+    <string name="err_pass_mismatch">Passwords do not match</string>
+    <string name="err_login_failed">Invalid email or password</string>
 </resources>
