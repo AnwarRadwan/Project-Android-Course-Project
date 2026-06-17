@@ -1,78 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="24dp">
+    android:background="@color/white">
 
-    <LinearLayout
+    <!-- الجزء العلوي الملون (Header) - يغطي 45% من الشاشة -->
+    <View
+        android:id="@+id/loginHeader"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:background="@color/primary_green"
+        app:layout_constraintHeight_percent="0.45"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Logo can be added here if needed, or just the title -->
+    <!-- محتوى الهيدر (الشعار والعنوان) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/loginCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:src="@drawable/travel_logo1"
+            android:contentDescription="@string/logo_desc" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:text="@string/login_title"
-            android:textColor="@color/primary_green"
-            android:textSize="36sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/etLoginEmail"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/secondary_green"
-            android:hint="@string/email_hint"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/primary_green"
-            android:textColorHint="@color/secondary_green" />
-
-        <EditText
-            android:id="@+id/etLoginPassword"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/secondary_green"
-            android:hint="@string/password_hint"
-            android:inputType="textPassword"
-            android:textColor="@color/primary_green"
-            android:textColorHint="@color/secondary_green" />
-
-        <CheckBox
-            android:id="@+id/cbRememberMe"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:buttonTint="@color/primary_green"
-            android:text="@string/remember_me"
-            android:textColor="@color/secondary_green" />
-
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/primary_green"
-            android:text="@string/btn_login"
-            android:textAllCaps="false"
+            android:layout_marginTop="12dp"
+            android:text="Welcome Back"
             android:textColor="@color/white"
-            android:textSize="18sp" />
-
-        <Button
-            android:id="@+id/btnGoToRegister"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_sign_up_prompt"
-            android:textAllCaps="false"
-            android:textColor="@color/secondary_green" />
-
+            android:textSize="34sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-</RelativeLayout>
+    <!-- كارت تسجيل الدخول المتداخل (Overlapping Card) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/loginCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.65">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="28dp">
+
+            <!-- حقل البريد الإلكتروني مع أيقونة -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email_hint"
+                app:startIconDrawable="@drawable/ic_email"
+                app:startIconTint="@color/primary_green"
+                app:boxStrokeColor="@color/primary_green"
+                app:hintTextColor="@color/primary_green">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLoginEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/primary_green" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- حقل كلمة المرور مع أيقونة وميزة الإظهار -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/password_hint"
+                app:passwordToggleEnabled="true"
+                app:startIconDrawable="@drawable/ic_lock"
+                app:startIconTint="@color/primary_green"
+                app:boxStrokeColor="@color/primary_green"
+                app:hintTextColor="@color/primary_green">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLoginPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:textColor="@color/primary_green" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/cbRememberMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:buttonTint="@color/primary_green"
+                android:text="@string/remember_me"
+                android:textColor="@color/secondary_green" />
+
+            <!-- زر تسجيل الدخول المطور -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="28dp"
+                android:text="@string/btn_login"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:backgroundTint="@color/primary_green"
+                android:elevation="8dp" />
+
+            <!-- رابط الانتقال لإنشاء الحساب -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoToRegister"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:text="@string/btn_sign_up_prompt"
+                android:textAllCaps="false"
+                android:textColor="@color/secondary_green" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

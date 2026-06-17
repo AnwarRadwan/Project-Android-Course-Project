@@ -3,6 +3,10 @@
     <string name="tagline">Explore The World</string>
     <string name="logo_desc">TravelGo Logo</string>
 
+    <!-- Navigation Drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <!-- Login Strings -->
     <string name="login_title">Welcome Back</string>
     <string name="email_hint">Email Address</string>

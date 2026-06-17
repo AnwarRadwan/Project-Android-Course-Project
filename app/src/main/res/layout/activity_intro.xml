@@ -1,69 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="24dp">
+    android:background="@color/white">
 
-    <LinearLayout
+    <!-- Green Header Section -->
+    <View
+        android:id="@+id/headerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/primary_green"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Logo: Restored -->
+    <ImageView
+        android:id="@+id/introLogo"
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:src="@drawable/travel_logo1"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/logo_desc"
+        app:layout_constraintBottom_toTopOf="@+id/contentCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Overlapping White Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/contentCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="40dp"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Logo: Increased size from 180dp to 280dp -->
-        <ImageView
-            android:id="@+id/introLogo"
-            android:layout_width="280dp"
-            android:layout_height="280dp"
-            android:src="@drawable/travel_logo1"
-            android:scaleType="fitCenter" />
-
-        <!-- Title -->
-        <TextView
-            android:id="@+id/introTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="TravelGo"
-            android:textColor="@color/primary_green"
-            android:textSize="36sp"
-            android:textStyle="bold" />
-
-        <!-- Description -->
-        <TextView
-            android:id="@+id/introDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:gravity="center"
-            android:text="Discover and plan your dream trips around the world with ease"
-            android:textColor="@color/secondary_green"
-            android:textSize="20sp" />
+            android:orientation="vertical"
+            android:padding="32dp">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/introTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Discover Your Next Adventure"
+                android:textColor="@color/primary_green"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:gravity="center" />
 
-    <!-- Connect Button -->
-    <Button
-        android:id="@+id/btnConnect"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/primary_green"
-        android:text="Connect"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textAllCaps="false" />
+            <TextView
+                android:id="@+id/introDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Discover and plan your dream trips around the world with ease"
+                android:textColor="@color/secondary_green"
+                android:textSize="17sp"
+                android:gravity="center" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConnect"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="32dp"
+                android:text="Get Started"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:backgroundTint="@color/primary_green"
+                android:elevation="8dp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Progress Overlay -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:visibility="gone"
-        android:indeterminateTint="@color/accent_green" />
+        android:indeterminateTint="@color/accent_green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
