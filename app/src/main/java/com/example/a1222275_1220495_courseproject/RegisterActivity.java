@@ -70,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
         String gender = spinnerGender.getSelectedItem().toString();
         String category = spinnerCategory.getSelectedItem().toString();
 
-        if (!validateInputs(email, firstName, lastName, password, confirmPassword)) {
+        if (!validateInputs(email, firstName, lastName, password, confirmPassword, phone)) {
             return;
         }
 
@@ -100,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    private boolean validateInputs(String email, String fname, String lname, String pass, String confirmPass) {
+    private boolean validateInputs(String email, String fname, String lname, String pass, String confirmPass, String phone) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Invalid email format");
             return false;
@@ -111,6 +111,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if (lname.length() < 3) {
             etLastName.setError("Minimum 3 characters");
+            return false;
+        }
+        if (!phone.matches("^05\\d{8}$")) {
+            etPhone.setError("Phone must be in format 05XXXXXXXX");
             return false;
         }
         if (pass.length() < 6 || !pass.matches(".*[a-zA-Z].*") || !pass.matches(".*\\d.*")) {
