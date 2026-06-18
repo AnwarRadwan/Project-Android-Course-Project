@@ -9,6 +9,7 @@ public class Reservation {
     private String reservationType;
     private String reservationDate;
     private String status;
+    private String tripDestination;
 
     public Reservation() {
     }
@@ -84,5 +85,13 @@ public class Reservation {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getTripDestination() {
+        return tripDestination;
+    }
+
+    public void setTripDestination(String tripDestination) {
+        this.tripDestination = tripDestination;
     }
 }

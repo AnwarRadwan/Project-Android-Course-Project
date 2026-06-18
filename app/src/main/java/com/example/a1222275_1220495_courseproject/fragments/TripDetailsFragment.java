@@ -36,7 +36,7 @@ public class TripDetailsFragment extends Fragment {
     private int tripId;
     private Trip trip;
     private DataBaseHelper dbHelper;
-    private int currentUserId = -1;
+    private long currentUserId = -1;
 
     private ImageView imgTripDetail;
     private TextView tvDestination, tvCountry, tvDuration, tvPrice, tvRating, tvDescription;
@@ -65,13 +65,7 @@ public class TripDetailsFragment extends Fragment {
 
     private void loadCurrentUser() {
         SharedPreferences prefs = requireContext().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
-        String email = prefs.getString("remember_email", null);
-        if (email != null) {
-            User user = dbHelper.getUserByEmail(email);
-            if (user != null) {
-                currentUserId = (int) user.getId();
-            }
-        }
+        currentUserId = prefs.getLong("userId", -1);
     }
 
     @Nullable
@@ -113,7 +107,7 @@ public class TripDetailsFragment extends Fragment {
                 .into(imgTripDetail);
 
         if (currentUserId != -1) {
-            isFavorite = dbHelper.isFavorite(currentUserId, tripId);
+            isFavorite = dbHelper.isFavorite((int) currentUserId, tripId);
             updateFavoriteIcon();
         }
     }
@@ -126,11 +120,11 @@ public class TripDetailsFragment extends Fragment {
             }
 
             if (isFavorite) {
-                dbHelper.removeFavorite(currentUserId, tripId);
+                dbHelper.removeFavorite((int) currentUserId, tripId);
                 isFavorite = false;
                 Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
             } else {
-                dbHelper.addFavorite(currentUserId, tripId);
+                dbHelper.addFavorite((int) currentUserId, tripId);
                 isFavorite = true;
                 Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
             }

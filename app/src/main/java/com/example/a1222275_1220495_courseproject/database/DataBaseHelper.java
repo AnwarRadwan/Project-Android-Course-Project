@@ -8,6 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.a1222275_1220495_courseproject.models.User;
 import com.example.a1222275_1220495_courseproject.models.Trip;
+import com.example.a1222275_1220495_courseproject.models.Reservation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DataBaseHelper class to manage SQLite database operations for the application.
@@ -168,8 +172,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * Retrieves all trips stored in the database.
      * @return A list of Trip objects containing all trip records.
      */
-    public java.util.List<Trip> getAllTrips() {
-        java.util.List<Trip> tripList = new java.util.ArrayList<>();
+    public List<Trip> getAllTrips() {
+        List<Trip> tripList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM TRIPS", null);
 
@@ -295,7 +299,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     /**
      * Inserts a new reservation into the RESERVATIONS table.
      */
-    public void insertReservation(int userId, int tripId, int quantity, String reservationType, String reservationDate, String status) {
+    public void insertReservation(long userId, long tripId, int quantity, String reservationType, String reservationDate, String status) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("USER_ID", userId);
@@ -305,6 +309,40 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put("RESERVATION_DATE", reservationDate);
         values.put("STATUS", status);
         db.insert("RESERVATIONS", null, values);
+    }
+
+    /**
+     * Retrieves all reservations for a specific user, including trip destination.
+     * @param userId The ID of the user whose reservations to fetch.
+     * @return A list of Reservation objects.
+     */
+    public List<Reservation> getReservationsByUserId(long userId) {
+        List<Reservation> reservationList = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        String query = "SELECT R.*, T.DESTINATION FROM RESERVATIONS R " +
+                       "JOIN TRIPS T ON R.TRIP_ID = T.TRIP_ID " +
+                       "WHERE R.USER_ID = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                Reservation reservation = new Reservation(
+                        cursor.getLong(cursor.getColumnIndexOrThrow("RESERVATION_ID")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("USER_ID")),
+                        cursor.getLong(cursor.getColumnIndexOrThrow("TRIP_ID")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("QUANTITY")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("RESERVATION_TYPE")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("RESERVATION_DATE")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("STATUS"))
+                );
+                reservation.setTripDestination(cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")));
+                reservationList.add(reservation);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return reservationList;
     }
 
     /**

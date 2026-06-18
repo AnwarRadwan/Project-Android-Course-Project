@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "LoginPrefs";
     private static final String KEY_EMAIL = "remember_email";
+    private static final String KEY_USER_ID = "userId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +79,15 @@ public class LoginActivity extends AppCompatActivity {
             String hashedPassword = hashPassword(password);
             if (user.getPassword().equals(hashedPassword)) {
                 // Success
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putLong(KEY_USER_ID, user.getId()); // حفظ الـ userId هنا
+                
                 if (cbRememberMe.isChecked()) {
-                    sharedPreferences.edit().putString(KEY_EMAIL, email).apply();
+                    editor.putString(KEY_EMAIL, email);
                 } else {
-                    sharedPreferences.edit().remove(KEY_EMAIL).apply();
+                    editor.remove(KEY_EMAIL);
                 }
+                editor.apply();
 
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);

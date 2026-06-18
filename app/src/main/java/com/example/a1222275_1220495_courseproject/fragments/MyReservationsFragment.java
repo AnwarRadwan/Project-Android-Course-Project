@@ -1,18 +1,86 @@
 package com.example.a1222275_1220495_courseproject.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.example.a1222275_1220495_courseproject.R;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.a1222275_1220495_courseproject.R;
+import com.example.a1222275_1220495_courseproject.adapters.ReservationAdapter;
+import com.example.a1222275_1220495_courseproject.database.DataBaseHelper;
+import com.example.a1222275_1220495_courseproject.models.Reservation;
+
+import java.util.List;
+
+/**
+ * Fragment to display the user's reservations.
+ * Fetches data from SQLite and handles empty state UI.
+ */
 public class MyReservationsFragment extends Fragment {
+
+    private RecyclerView rvReservations;
+    private LinearLayout layoutEmptyState;
+    private DataBaseHelper dbHelper;
+    private ReservationAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_my_reservations, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_reservations, container, false);
+
+        // Initialize UI components
+        rvReservations = view.findViewById(R.id.rvReservations);
+        layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
+
+        // Setup RecyclerView
+        rvReservations.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        dbHelper = new DataBaseHelper(getContext());
+
+        loadReservations();
+
+        return view;
+    }
+
+    /**
+     * Loads reservations for the logged-in user from the database.
+     */
+    private void loadReservations() {
+        // Retrieve userId from SharedPreferences (Assumed saved during login)
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
+        long userId = sharedPreferences.getLong("userId", -1);
+
+        if (userId != -1) {
+            List<Reservation> reservationList = dbHelper.getReservationsByUserId(userId);
+
+            if (reservationList != null && !reservationList.isEmpty()) {
+                // Show RecyclerView and hide empty state
+                rvReservations.setVisibility(View.VISIBLE);
+                layoutEmptyState.setVisibility(View.GONE);
+
+                adapter = new ReservationAdapter(reservationList);
+                rvReservations.setAdapter(adapter);
+            } else {
+                // No reservations found
+                showEmptyState();
+            }
+        } else {
+            // User not logged in or ID not found
+            showEmptyState();
+        }
+    }
+
+    private void showEmptyState() {
+        rvReservations.setVisibility(View.GONE);
+        layoutEmptyState.setVisibility(View.VISIBLE);
     }
 }
