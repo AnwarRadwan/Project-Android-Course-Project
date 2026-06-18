@@ -1,6 +1,8 @@
 package com.example.a1222275_1220495_courseproject.fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
@@ -33,6 +36,7 @@ public class TripsFragment extends Fragment implements TripAdapter.OnTripClickLi
     private TextView tvEmptyState;
     private SearchView searchViewTrips;
     private ImageButton btnFilter;
+    private long userId;
 
     // Lists to hold original and filtered data
     private List<Trip> allTripsList = new ArrayList<>();
@@ -59,16 +63,32 @@ public class TripsFragment extends Fragment implements TripAdapter.OnTripClickLi
         recyclerViewTrips.setLayoutManager(new LinearLayoutManager(getContext()));
 
         dbHelper = new DataBaseHelper(getContext());
+        
+        // Get logged in user ID
+        SharedPreferences prefs = requireContext().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
+        userId = prefs.getLong("userId", -1);
+
         allTripsList = dbHelper.getAllTrips();
         filteredTripsList.addAll(allTripsList);
 
         tripAdapter = new TripAdapter(filteredTripsList, this);
         recyclerViewTrips.setAdapter(tripAdapter);
+        
+        refreshFavorites();
 
         setupSearch();
         setupFilterButton();
 
         return view;
+    }
+
+    private void refreshFavorites() {
+        List<Trip> favTrips = dbHelper.getFavoritesByUser(userId);
+        List<Long> favIds = new ArrayList<>();
+        for (Trip t : favTrips) {
+            favIds.add(t.getTripId());
+        }
+        tripAdapter.setFavoriteTripIds(favIds);
     }
 
     private void setupSearch() {
@@ -162,9 +182,6 @@ public class TripsFragment extends Fragment implements TripAdapter.OnTripClickLi
         dialog.show();
     }
 
-    /**
-     * Combines Search and All Filters to update the RecyclerView.
-     */
     private void applyFilters() {
         filteredTripsList.clear();
         String query = currentQuery.toLowerCase().trim();
@@ -187,7 +204,6 @@ public class TripsFragment extends Fragment implements TripAdapter.OnTripClickLi
 
         tripAdapter.updateList(filteredTripsList);
 
-        // Update Empty State Visibility
         if (filteredTripsList.isEmpty()) {
             tvEmptyState.setVisibility(View.VISIBLE);
             recyclerViewTrips.setVisibility(View.GONE);
@@ -200,11 +216,27 @@ public class TripsFragment extends Fragment implements TripAdapter.OnTripClickLi
     @Override
     public void onTripClick(Trip trip) {
         TripDetailsFragment detailsFragment = TripDetailsFragment.newInstance((int) trip.getTripId());
-
         getParentFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, detailsFragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public void onFavoriteClick(Trip trip) {
+        if (userId == -1) {
+            Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (dbHelper.isFavorite((int) userId, (int) trip.getTripId())) {
+            dbHelper.removeFavorite(userId, trip.getTripId());
+            Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+        } else {
+            dbHelper.addFavorite((int) userId, (int) trip.getTripId());
+            Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+        }
+        refreshFavorites();
     }
 }
