@@ -231,6 +231,83 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Retrieves a single trip from the database by its TRIP_ID.
+     * @param tripId The ID of the trip to look for.
+     * @return Trip object if found, otherwise null.
+     */
+    public Trip getTripById(int tripId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("TRIPS", null, "TRIP_ID = ?", new String[]{String.valueOf(tripId)}, null, null, null);
+
+        Trip trip = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            trip = new Trip(
+                    cursor.getInt(cursor.getColumnIndexOrThrow("TRIP_ID")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("COUNTRY")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("DURATION")),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow("PRICE")),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow("RATING")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("DESCRIPTION")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
+            );
+            cursor.close();
+        } else if (cursor != null) {
+            cursor.close();
+        }
+        return trip;
+    }
+
+    /**
+     * Checks if a trip is marked as favorite by a specific user.
+     */
+    public boolean isFavorite(int userId, int tripId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("FAVORITES", null, "USER_ID = ? AND TRIP_ID = ?",
+                new String[]{String.valueOf(userId), String.valueOf(tripId)}, null, null, null);
+        boolean exists = (cursor != null && cursor.getCount() > 0);
+        if (cursor != null) cursor.close();
+        return exists;
+    }
+
+    /**
+     * Adds a trip to the user's favorites list.
+     */
+    public void addFavorite(int userId, int tripId) {
+        if (!isFavorite(userId, tripId)) {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("USER_ID", userId);
+            values.put("TRIP_ID", tripId);
+            db.insert("FAVORITES", null, values);
+        }
+    }
+
+    /**
+     * Removes a trip from the user's favorites list.
+     */
+    public void removeFavorite(int userId, int tripId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("FAVORITES", "USER_ID = ? AND TRIP_ID = ?",
+                new String[]{String.valueOf(userId), String.valueOf(tripId)});
+    }
+
+    /**
+     * Inserts a new reservation into the RESERVATIONS table.
+     */
+    public void insertReservation(int userId, int tripId, int quantity, String reservationType, String reservationDate, String status) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("USER_ID", userId);
+        values.put("TRIP_ID", tripId);
+        values.put("QUANTITY", quantity);
+        values.put("RESERVATION_TYPE", reservationType);
+        values.put("RESERVATION_DATE", reservationDate);
+        values.put("STATUS", status);
+        db.insert("RESERVATIONS", null, values);
+    }
+
+    /**
      * Hashes a plain text password using SHA-256.
      * Used here to keep test data consistent with the app's real password storage.
      */

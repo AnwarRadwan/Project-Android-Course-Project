@@ -41,6 +41,12 @@ public class TripsFragment extends Fragment implements TripAdapter.OnTripClickLi
 
     @Override
     public void onTripClick(Trip trip) {
-        Toast.makeText(getContext(), "Selected: " + trip.getDestination(), Toast.LENGTH_SHORT).show();
+        TripDetailsFragment detailsFragment = TripDetailsFragment.newInstance((int) trip.getTripId());
+
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, detailsFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
