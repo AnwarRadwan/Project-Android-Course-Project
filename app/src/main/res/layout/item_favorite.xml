@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Favorite Item Layout: Represents a single favorite trip card -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Trip Image -->
+        <ImageView
+            android:id="@+id/imgFavoriteTrip"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:src="@color/light_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Destination Name -->
+            <TextView
+                android:id="@+id/tvFavDestination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Paris"
+                android:textColor="#1F6F5F"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Country Name -->
+            <TextView
+                android:id="@+id/tvFavCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="France"
+                android:textColor="#2FA084"
+                android:textSize="14sp" />
+
+            <!-- Price and Rating Row -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvFavPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="$1200"
+                    android:textColor="#1F6F5F"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvFavRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="★ 4.8"
+                    android:textColor="#6FCF97"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!-- Action Buttons Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRemoveFav"
+                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:text="Remove"
+                    android:textAllCaps="false"
+                    app:backgroundTint="#E57373"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnReserveFav"
+                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:text="Reserve"
+                    android:textAllCaps="false"
+                    app:backgroundTint="#1F6F5F"
+                    app:cornerRadius="8dp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

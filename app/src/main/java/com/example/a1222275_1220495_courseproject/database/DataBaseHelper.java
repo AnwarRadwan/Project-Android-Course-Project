@@ -15,7 +15,6 @@ import java.util.List;
 
 /**
  * DataBaseHelper class to manage SQLite database operations for the application.
- * It handles the creation, version management, and data access for users, trips, and reservations.
  */
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -26,65 +25,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    /**
-     * Called when the database is created for the first time.
-     * This method defines the schema for all tables and inserts initial mock data.
-     */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create table for storing user profile and account details
-        db.execSQL(
-                "CREATE TABLE USERS(" +
-                        "ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "EMAIL TEXT UNIQUE," +
-                        "FIRSTNAME TEXT," +
-                        "LASTNAME TEXT," +
-                        "PASSWORD TEXT," +
-                        "GENDER TEXT," +
-                        "CATEGORY TEXT," +
-                        "PHONE TEXT," +
-                        "IMAGE TEXT)"
-        );
-
-        // Create table for storing trip packages information
-        db.execSQL(
-                "CREATE TABLE TRIPS(" +
-                        "TRIP_ID INTEGER PRIMARY KEY," +
-                        "DESTINATION TEXT," +
-                        "COUNTRY TEXT," +
-                        "DURATION INTEGER," +
-                        "PRICE REAL," +
-                        "RATING REAL," +
-                        "DESCRIPTION TEXT," +
-                        "IMAGE TEXT)"
-        );
-
-        // Create table for storing user trip bookings and reservations
-        db.execSQL(
-                "CREATE TABLE RESERVATIONS(" +
-                        "RESERVATION_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "USER_ID INTEGER," +
-                        "TRIP_ID INTEGER," +
-                        "QUANTITY INTEGER," +
-                        "RESERVATION_TYPE TEXT," +
-                        "RESERVATION_DATE TEXT," +
-                        "STATUS TEXT)"
-        );
-
-        // Create table for storing user's favorite trips
-        db.execSQL(
-                "CREATE TABLE FAVORITES(" +
-                        "FAVORITE_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "USER_ID INTEGER," +
-                        "TRIP_ID INTEGER)"
-        );
-
+        db.execSQL("CREATE TABLE USERS(ID INTEGER PRIMARY KEY AUTOINCREMENT, EMAIL TEXT UNIQUE, FIRSTNAME TEXT, LASTNAME TEXT, PASSWORD TEXT, GENDER TEXT, CATEGORY TEXT, PHONE TEXT, IMAGE TEXT)");
+        db.execSQL("CREATE TABLE TRIPS(TRIP_ID INTEGER PRIMARY KEY, DESTINATION TEXT, COUNTRY TEXT, DURATION INTEGER, PRICE REAL, RATING REAL, DESCRIPTION TEXT, IMAGE TEXT)");
+        db.execSQL("CREATE TABLE RESERVATIONS(RESERVATION_ID INTEGER PRIMARY KEY AUTOINCREMENT, USER_ID INTEGER, TRIP_ID INTEGER, QUANTITY INTEGER, RESERVATION_TYPE TEXT, RESERVATION_DATE TEXT, STATUS TEXT)");
+        db.execSQL("CREATE TABLE FAVORITES(FAVORITE_ID INTEGER PRIMARY KEY AUTOINCREMENT, USER_ID INTEGER, TRIP_ID INTEGER)");
     }
 
-    /**
-     * Called when the database needs to be upgraded.
-     * This version drops all existing tables and recreates them.
-     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS USERS");
@@ -94,10 +42,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    /**
-     * Inserts a new user record into the database.
-     * @param user The user object containing all registration info.
-     */
     public void insertUser(User user) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -112,11 +56,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert("USERS", null, values);
     }
 
-    /**
-     * Retrieves a single user from the database by their email address.
-     * @param email The user email to look for.
-     * @return User object if found, otherwise null.
-     */
     public User getUserByEmail(String email) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("USERS", null, "EMAIL = ?", new String[]{email}, null, null, null);
@@ -135,16 +74,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cursor.close();
             return user;
         }
-        if (cursor != null) {
-            cursor.close();
-        }
+        if (cursor != null) cursor.close();
         return null;
     }
 
-    /**
-     * Inserts or updates a trip package in the TRIPS table.
-     * @param trip The trip data to be inserted or replaced.
-     */
     public void insertTrip(Trip trip) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -156,93 +89,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put("RATING", trip.getRating());
         values.put("DESCRIPTION", trip.getDescription());
         values.put("IMAGE", trip.getImage());
-        // Use replace to ensure existing trips are updated if trip_id already exists
         db.replace("TRIPS", null, values);
     }
 
-    /**
-     * Deletes all records from the TRIPS table.
-     */
     public void deleteAllTrips() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete("TRIPS", null, null);
     }
 
-    /**
-     * Retrieves all trips stored in the database.
-     * @return A list of Trip objects containing all trip records.
-     */
-    public List<Trip> getAllTrips() {
-        List<Trip> tripList = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM TRIPS", null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                Trip trip = new Trip(
-                        cursor.getInt(cursor.getColumnIndexOrThrow("TRIP_ID")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("COUNTRY")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("DURATION")),
-                        cursor.getDouble(cursor.getColumnIndexOrThrow("PRICE")),
-                        cursor.getDouble(cursor.getColumnIndexOrThrow("RATING")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("DESCRIPTION")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
-                );
-                tripList.add(trip);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return tripList;
-    }
-
-    /**
-     * Returns a cursor containing all user records from the database.
-     * @return Cursor object for UI display or processing.
-     */
-    public Cursor getAllUsers() {
-        SQLiteDatabase db = getReadableDatabase();
-        return db.rawQuery("SELECT * FROM USERS", null);
-    }
-
-    /**
-     * Inserts predefined test users into the database for testing purposes.
-     * Skips insertion if a user with the same email already exists.
-     */
-    public void insertTestUsers() {
-        String[][] testUsers = {
-                {"ahmad@example.com", "Ahmad", "Khalil", "Ahmad123", "Male", "Regular", "0599123456"},
-                {"sara@example.com", "Sara", "Yousef", "Sara654", "Female", "Premium", "0598123456"},
-                {"omar@example.com", "Omar", "Hasan", "Omar123", "Male", "Regular", "0597123456"}
-        };
-        for (String[] u : testUsers) {
-            if (getUserByEmail(u[0]) == null) {
-                String hashedPassword = hashPassword(u[3]);
-
-                ContentValues values = new ContentValues();
-                values.put("EMAIL", u[0]);
-                values.put("FIRSTNAME", u[1]);
-                values.put("LASTNAME", u[2]);
-                values.put("PASSWORD", hashedPassword);
-                values.put("GENDER", u[4]);
-                values.put("CATEGORY", u[5]);
-                values.put("PHONE", u[6]);
-                values.put("IMAGE", "");
-
-                getWritableDatabase().insert("USERS", null, values);
-            }
-        }
-    }
-
-    /**
-     * Retrieves a single trip from the database by its TRIP_ID.
-     * @param tripId The ID of the trip to look for.
-     * @return Trip object if found, otherwise null.
-     */
     public Trip getTripById(int tripId) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("TRIPS", null, "TRIP_ID = ?", new String[]{String.valueOf(tripId)}, null, null, null);
-
         Trip trip = null;
         if (cursor != null && cursor.moveToFirst()) {
             trip = new Trip(
@@ -256,49 +113,32 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
             );
             cursor.close();
-        } else if (cursor != null) {
-            cursor.close();
-        }
+        } else if (cursor != null) cursor.close();
         return trip;
     }
 
-    /**
-     * Checks if a trip is marked as favorite by a specific user.
-     */
-    public boolean isFavorite(int userId, int tripId) {
+    public List<Trip> getAllTrips() {
+        List<Trip> tripList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("FAVORITES", null, "USER_ID = ? AND TRIP_ID = ?",
-                new String[]{String.valueOf(userId), String.valueOf(tripId)}, null, null, null);
-        boolean exists = (cursor != null && cursor.getCount() > 0);
-        if (cursor != null) cursor.close();
-        return exists;
-    }
-
-    /**
-     * Adds a trip to the user's favorites list.
-     */
-    public void addFavorite(int userId, int tripId) {
-        if (!isFavorite(userId, tripId)) {
-            SQLiteDatabase db = getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put("USER_ID", userId);
-            values.put("TRIP_ID", tripId);
-            db.insert("FAVORITES", null, values);
+        Cursor cursor = db.query("TRIPS", null, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                tripList.add(new Trip(
+                        cursor.getLong(cursor.getColumnIndexOrThrow("TRIP_ID")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("COUNTRY")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("DURATION")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("PRICE")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("RATING")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("DESCRIPTION")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
+                ));
+            } while (cursor.moveToNext());
         }
+        if (cursor != null) cursor.close();
+        return tripList;
     }
 
-    /**
-     * Removes a trip from the user's favorites list.
-     */
-    public void removeFavorite(int userId, int tripId) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete("FAVORITES", "USER_ID = ? AND TRIP_ID = ?",
-                new String[]{String.valueOf(userId), String.valueOf(tripId)});
-    }
-
-    /**
-     * Inserts a new reservation into the RESERVATIONS table.
-     */
     public void insertReservation(long userId, long tripId, int quantity, String reservationType, String reservationDate, String status) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -311,17 +151,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert("RESERVATIONS", null, values);
     }
 
-    /**
-     * Retrieves all reservations for a specific user, including trip destination.
-     * @param userId The ID of the user whose reservations to fetch.
-     * @return A list of Reservation objects.
-     */
     public List<Reservation> getReservationsByUserId(long userId) {
         List<Reservation> reservationList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
 
+        // استخدام LEFT JOIN لضمان جلب الحجز حتى لو كانت الرحلة غير مخزنة في جدول TRIPS حالياً
         String query = "SELECT R.*, T.DESTINATION FROM RESERVATIONS R " +
-                       "JOIN TRIPS T ON R.TRIP_ID = T.TRIP_ID " +
+                       "LEFT JOIN TRIPS T ON R.TRIP_ID = T.TRIP_ID " +
                        "WHERE R.USER_ID = ?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
@@ -337,7 +173,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow("RESERVATION_DATE")),
                         cursor.getString(cursor.getColumnIndexOrThrow("STATUS"))
                 );
-                reservation.setTripDestination(cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")));
+                String dest = cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION"));
+                reservation.setTripDestination(dest != null ? dest : "Unknown Trip #" + reservation.getTripId());
                 reservationList.add(reservation);
             } while (cursor.moveToNext());
         }
@@ -345,10 +182,73 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return reservationList;
     }
 
-    /**
-     * Hashes a plain text password using SHA-256.
-     * Used here to keep test data consistent with the app's real password storage.
-     */
+    public void addFavorite(int userId, int tripId) {
+        if (!isFavorite(userId, tripId)) {
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("USER_ID", userId);
+            values.put("TRIP_ID", tripId);
+            db.insert("FAVORITES", null, values);
+        }
+    }
+
+    public void removeFavorite(long userId, long tripId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("FAVORITES", "USER_ID = ? AND TRIP_ID = ?", new String[]{String.valueOf(userId), String.valueOf(tripId)});
+    }
+
+    public boolean isFavorite(int userId, int tripId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("FAVORITES", null, "USER_ID = ? AND TRIP_ID = ?", new String[]{String.valueOf(userId), String.valueOf(tripId)}, null, null, null);
+        boolean exists = (cursor != null && cursor.getCount() > 0);
+        if (cursor != null) cursor.close();
+        return exists;
+    }
+
+    public List<Trip> getFavoritesByUser(long userId) {
+        List<Trip> favoriteTrips = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT T.* FROM TRIPS T JOIN FAVORITES F ON T.TRIP_ID = F.TRIP_ID WHERE F.USER_ID = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+        if (cursor.moveToFirst()) {
+            do {
+                favoriteTrips.add(new Trip(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("TRIP_ID")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("COUNTRY")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("DURATION")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("PRICE")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("RATING")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("DESCRIPTION")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
+                ));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return favoriteTrips;
+    }
+
+    public void insertTestUsers() {
+        String[][] testUsers = {
+                {"ahmad@example.com", "Ahmad", "Khalil", "Ahmad123", "Male", "Regular", "0599123456"},
+                {"sara@example.com", "Sara", "Yousef", "Sara654", "Female", "Premium", "0598123456"}
+        };
+        for (String[] u : testUsers) {
+            if (getUserByEmail(u[0]) == null) {
+                ContentValues values = new ContentValues();
+                values.put("EMAIL", u[0]);
+                values.put("FIRSTNAME", u[1]);
+                values.put("LASTNAME", u[2]);
+                values.put("PASSWORD", hashPassword(u[3]));
+                values.put("GENDER", u[4]);
+                values.put("CATEGORY", u[5]);
+                values.put("PHONE", u[6]);
+                values.put("IMAGE", "");
+                getWritableDatabase().insert("USERS", null, values);
+            }
+        }
+    }
+
     private String hashPassword(String password) {
         try {
             java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
@@ -360,8 +260,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 hexString.append(hex);
             }
             return hexString.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-            return password;
-        }
+        } catch (java.security.NoSuchAlgorithmException e) { return password; }
     }
 }
