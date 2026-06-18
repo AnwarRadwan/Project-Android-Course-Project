@@ -36,7 +36,7 @@ public class IntroActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private DataBaseHelper dbHelper;
     // Mock API URL
-    private static final String API_URL = "https://mocki.io/v1/ee195475-f2ec-4ab3-aecc-828ef0c92985";
+    private static final String API_URL = "https://mocki.io/v1/9ebd9eda-e0fb-43f3-b5af-29ba6122f0cc";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
