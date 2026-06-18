@@ -44,6 +44,10 @@ public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder
         return tripList.size();
     }
 
+    /**
+     * Updates the adapter's dataset and refreshes the RecyclerView.
+     * Used for real-time search and filtering.
+     */
     public void updateList(List<Trip> newList) {
         this.tripList = newList;
         notifyDataSetChanged();
