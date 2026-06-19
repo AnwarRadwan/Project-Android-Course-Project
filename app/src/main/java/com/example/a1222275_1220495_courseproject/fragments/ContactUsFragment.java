@@ -80,3 +80,4 @@ public class ContactUsFragment extends Fragment {
         }
     }
 }
+// Contact us Fragment
