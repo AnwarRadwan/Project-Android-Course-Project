@@ -10,6 +10,7 @@ public class Reservation {
     private String reservationDate;
     private String status;
     private String tripDestination;
+    private String userEmail;
 
     public Reservation() {
     }
@@ -93,5 +94,13 @@ public class Reservation {
 
     public void setTripDestination(String tripDestination) {
         this.tripDestination = tripDestination;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

@@ -41,6 +41,11 @@
             android:label="Create Admin" />
 
         <activity
+            android:name=".AddEditTripActivity"
+            android:exported="false"
+            android:label="Trip Details" />
+
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
