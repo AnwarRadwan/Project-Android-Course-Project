@@ -1,11 +1,15 @@
 package com.example.a1222275_1220495_courseproject.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,9 +23,13 @@ import com.example.a1222275_1220495_courseproject.R;
 import com.example.a1222275_1220495_courseproject.adapters.FavoriteAdapter;
 import com.example.a1222275_1220495_courseproject.database.DataBaseHelper;
 import com.example.a1222275_1220495_courseproject.models.Trip;
+import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * FavoritesFragment: Displays a list of trips that the user has marked as favorites.
@@ -39,33 +47,24 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the fragment layout
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
-        // Initialize UI components and Database Helper
         rvFavorites = view.findViewById(R.id.rvFavorites);
         tvEmptyFavorites = view.findViewById(R.id.tvEmptyFavorites);
         dbHelper = new DataBaseHelper(getContext());
 
-        // Setup RecyclerView with a Linear Layout Manager
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Load the current user and their favorite trips
         loadFavorites();
 
         return view;
     }
 
-    /**
-     * Retrieves the current user's ID and loads their favorites from the database.
-     */
     private void loadFavorites() {
-        // Get user ID from SharedPreferences
         SharedPreferences prefs = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
         currentUserId = prefs.getLong("userId", -1);
 
         if (currentUserId != -1) {
-            // Fetch the list of favorite trips from the database
             favoriteTrips = dbHelper.getFavoritesByUser(currentUserId);
         } else {
             favoriteTrips = new ArrayList<>();
@@ -73,14 +72,10 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
 
         updateUI();
 
-        // Initialize and set the adapter
         adapter = new FavoriteAdapter(favoriteTrips, this);
         rvFavorites.setAdapter(adapter);
     }
 
-    /**
-     * Updates the visibility of the RecyclerView and Empty State Message based on the list size.
-     */
     private void updateUI() {
         if (favoriteTrips == null || favoriteTrips.isEmpty()) {
             rvFavorites.setVisibility(View.GONE);
@@ -91,31 +86,68 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
         }
     }
 
-    /**
-     * Callback for the Remove button: Deletes the trip from favorites in the database and updates UI.
-     */
     @Override
     public void onRemove(Trip trip, int position) {
         if (currentUserId != -1) {
-            // Remove from database
             dbHelper.removeFavorite(currentUserId, trip.getTripId());
-            // Remove from local list and notify adapter
             favoriteTrips.remove(position);
             adapter.notifyItemRemoved(position);
-            
-            // Check if we need to show the empty message
             updateUI();
-
             Toast.makeText(getContext(), trip.getDestination() + " removed from favorites", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Callback for the Reserve button: Currently shows a placeholder toast.
-     */
     @Override
     public void onReserve(Trip trip) {
-        // Placeholder for reservation logic
-        Toast.makeText(getContext(), "Opening reservation for " + trip.getDestination(), Toast.LENGTH_SHORT).show();
+        showReservationDialog(trip);
+    }
+
+    private void showReservationDialog(Trip trip) {
+        if (currentUserId == -1) {
+            Toast.makeText(getContext(), "Please login to make a reservation", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_reserve, null);
+        builder.setView(dialogView);
+
+        EditText etQuantity = dialogView.findViewById(R.id.etQuantity);
+        Spinner spinnerType = dialogView.findViewById(R.id.spinnerType);
+        MaterialButton btnConfirm = dialogView.findViewById(R.id.btnConfirmReservation);
+
+        String[] types = {"Standard", "VIP", "Premium"};
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, types);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerType.setAdapter(typeAdapter);
+
+        AlertDialog dialog = builder.create();
+
+        btnConfirm.setOnClickListener(v -> {
+            String qtyStr = etQuantity.getText().toString().trim();
+            if (qtyStr.isEmpty()) {
+                etQuantity.setError("Enter quantity");
+                return;
+            }
+
+            try {
+                int quantity = Integer.parseInt(qtyStr);
+                String type = spinnerType.getSelectedItem().toString();
+                String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+
+                boolean success = dbHelper.insertReservation(currentUserId, trip.getTripId(), quantity, type, date, "Pending");
+
+                if (success) {
+                    Toast.makeText(getContext(), "Reservation saved successfully for " + trip.getDestination(), Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(getContext(), "Error saving reservation to database", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        dialog.show();
     }
 }

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.a1222275_1220495_courseproject.fragments.AdminHomeFragment;
 import com.example.a1222275_1220495_courseproject.fragments.ManageTripsFragment;
+import com.example.a1222275_1220495_courseproject.fragments.AdminReservationsFragment;
 import com.example.a1222275_1220495_courseproject.fragments.ViewUsersFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -67,7 +68,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         } else if (id == R.id.nav_manage_trips) {
             selectedFragment = new ManageTripsFragment();
         } else if (id == R.id.nav_view_reservations) {
-            Toast.makeText(this, "View Reservations functionality coming soon", Toast.LENGTH_SHORT).show();
+            selectedFragment = new AdminReservationsFragment();
         } else if (id == R.id.nav_admin_logout) {
             showLogoutConfirmationDialog();
         }

@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.a1222275_1220495_courseproject.models.User;
 import com.example.a1222275_1220495_courseproject.models.Trip;
 import com.example.a1222275_1220495_courseproject.models.Reservation;
+import com.example.a1222275_1220495_courseproject.models.AdminReservation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +58,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public void insertTestUsers() {
         SQLiteDatabase db = getWritableDatabase();
-        // Check if users already exist to avoid duplicates
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM USERS", null);
         cursor.moveToFirst();
         int count = cursor.getInt(0);
@@ -67,28 +68,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             User admin = new User(-1, "admin@travelgo.com", "Admin", "User", "admin123", "Male", "Admin", "123456789", null);
             insertUser(admin);
             
-            // Regular user
             User user = new User(-1, "user@example.com", "John", "Doe", "user123", "Male", "User", "987654321", null);
             insertUser(user);
         }
-    }
-
-    public List<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("USERS", null, null, null, null, null, "ID DESC");
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                users.add(extractUser(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-        return users;
-    }
-
-    public void deleteUser(long userId) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete("USERS", "ID = ?", new String[]{String.valueOf(userId)});
     }
 
     public User getUserByEmail(String email) {
@@ -103,9 +85,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public User getUserById(long id) {
+    public User getUserById(long userId) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("USERS", null, "ID = ?", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor cursor = db.query("USERS", null, "ID = ?", new String[]{String.valueOf(userId)}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
             User user = extractUser(cursor);
             cursor.close();
@@ -113,6 +95,42 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         if (cursor != null) cursor.close();
         return null;
+    }
+
+    public List<User> getAllUsers() {
+        List<User> userList = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("USERS", null, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                userList.add(extractUser(cursor));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return userList;
+    }
+
+    public int updateUser(User user) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("FIRSTNAME", user.getFirstName());
+        values.put("LASTNAME", user.getLastName());
+        values.put("GENDER", user.getGender());
+        values.put("PHONE", user.getPhone());
+        values.put("IMAGE", user.getImage());
+        return db.update("USERS", values, "ID = ?", new String[]{String.valueOf(user.getId())});
+    }
+
+    public void updateUserPassword(long userId, String newPassword) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("PASSWORD", newPassword);
+        db.update("USERS", values, "ID = ?", new String[]{String.valueOf(userId)});
+    }
+
+    public void deleteUser(long userId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("USERS", "ID = ?", new String[]{String.valueOf(userId)});
     }
 
     private User extractUser(Cursor cursor) {
@@ -129,23 +147,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         );
     }
 
-    public void updateUser(User user) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("FIRSTNAME", user.getFirstName());
-        values.put("LASTNAME", user.getLastName());
-        values.put("PHONE", user.getPhone());
-        values.put("IMAGE", user.getImage());
-        db.update("USERS", values, "ID = ?", new String[]{String.valueOf(user.getId())});
-    }
-
-    public void updateUserPassword(long userId, String newPassword) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("PASSWORD", newPassword);
-        db.update("USERS", values, "ID = ?", new String[]{String.valueOf(userId)});
-    }
-
     // --- Trip Methods ---
     public long insertTrip(Trip trip) {
         SQLiteDatabase db = getWritableDatabase();
@@ -160,7 +161,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return db.insert("TRIPS", null, values);
     }
 
-    public void updateTrip(Trip trip) {
+    public int updateTrip(Trip trip) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("DESTINATION", trip.getDestination());
@@ -170,7 +171,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put("RATING", trip.getRating());
         values.put("DESCRIPTION", trip.getDescription());
         values.put("IMAGE", trip.getImage());
-        db.update("TRIPS", values, "TRIP_ID = ?", new String[]{String.valueOf(trip.getTripId())});
+        return db.update("TRIPS", values, "TRIP_ID = ?", new String[]{String.valueOf(trip.getTripId())});
     }
 
     public void deleteTrip(long tripId) {
@@ -181,19 +182,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void deleteAllTrips() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete("TRIPS", null, null);
-    }
-
-    public List<Trip> getAllTrips() {
-        List<Trip> trips = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("TRIPS", null, null, null, null, null, "TRIP_ID DESC");
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                trips.add(extractTrip(cursor));
-            } while (cursor.moveToNext());
-            cursor.close();
-        }
-        return trips;
     }
 
     public Trip getTripById(long tripId) {
@@ -207,10 +195,24 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return trip;
     }
 
+    public List<Trip> getAllTrips() {
+        List<Trip> trips = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("TRIPS", null, null, null, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                trips.add(extractTrip(cursor));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return trips;
+    }
+
     public List<Trip> getPopularDestinations() {
         List<Trip> trips = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("TRIPS", null, "RATING >= ?", new String[]{"4.5"}, null, null, "RATING DESC");
+        // Return trips ordered by rating as popular ones
+        Cursor cursor = db.query("TRIPS", null, null, null, null, null, "RATING DESC LIMIT 5");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 trips.add(extractTrip(cursor));
@@ -223,7 +225,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public List<Trip> getBestTravelOffers() {
         List<Trip> trips = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query("TRIPS", null, null, null, null, null, "PRICE ASC");
+        // Return trips ordered by price as best offers
+        Cursor cursor = db.query("TRIPS", null, null, null, null, null, "PRICE ASC LIMIT 5");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 trips.add(extractTrip(cursor));
@@ -247,7 +250,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     // --- Reservation Logic ---
-    public void insertReservation(long userId, long tripId, int quantity, String type, String date, String status) {
+    public boolean insertReservation(long userId, long tripId, int quantity, String type, String date, String status) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("USER_ID", userId);
@@ -256,15 +259,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put("RESERVATION_TYPE", type);
         values.put("RESERVATION_DATE", date);
         values.put("STATUS", status);
-        db.insert("RESERVATIONS", null, values);
+        long result = db.insert("RESERVATIONS", null, values);
+        if (result != -1) {
+            Log.d("DataBaseHelper", "Reservation inserted: ID " + result + " for User " + userId);
+            return true;
+        } else {
+            Log.e("DataBaseHelper", "Failed to insert reservation");
+            return false;
+        }
     }
 
-    public List<Reservation> getReservationsByUserId(long userId) {
+    public List<Reservation> getUserReservations(long userId) {
         List<Reservation> reservationList = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT R.*, T.DESTINATION FROM RESERVATIONS R " +
                        "LEFT JOIN TRIPS T ON R.TRIP_ID = T.TRIP_ID " +
-                       "WHERE R.USER_ID = ?";
+                       "WHERE R.USER_ID = ? " +
+                       "ORDER BY R.RESERVATION_ID DESC";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -278,24 +289,35 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return reservationList;
     }
 
-    public List<Reservation> getAllReservations() {
-        List<Reservation> reservationList = new ArrayList<>();
+    public List<AdminReservation> getAllAdminReservations() {
+        List<AdminReservation> adminReservations = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT R.*, T.DESTINATION, U.EMAIL FROM RESERVATIONS R " +
-                       "LEFT JOIN TRIPS T ON R.TRIP_ID = T.TRIP_ID " +
+        String query = "SELECT R.RESERVATION_ID, U.FIRSTNAME || ' ' || U.LASTNAME AS USER_NAME, " +
+                       "T.DESTINATION AS TRIP_NAME, R.QUANTITY, R.RESERVATION_TYPE, " +
+                       "R.RESERVATION_DATE, R.STATUS " +
+                       "FROM RESERVATIONS R " +
                        "LEFT JOIN USERS U ON R.USER_ID = U.ID " +
+                       "LEFT JOIN TRIPS T ON R.TRIP_ID = T.TRIP_ID " +
                        "ORDER BY R.RESERVATION_ID DESC";
+        
         Cursor cursor = db.rawQuery(query, null);
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                Reservation res = extractReservation(cursor);
-                res.setTripDestination(cursor.getString(cursor.getColumnIndexOrThrow("DESTINATION")));
-                // We'll use tripDestination field to temporarily hold email or update model
-                reservationList.add(res);
+                AdminReservation ar = new AdminReservation();
+                ar.setReservationId(cursor.getLong(cursor.getColumnIndexOrThrow("RESERVATION_ID")));
+                String uName = cursor.getString(cursor.getColumnIndexOrThrow("USER_NAME"));
+                ar.setUserName(uName != null ? uName : "Unknown User");
+                String tName = cursor.getString(cursor.getColumnIndexOrThrow("TRIP_NAME"));
+                ar.setTripName(tName != null ? tName : "Unknown Trip");
+                ar.setQuantity(cursor.getInt(cursor.getColumnIndexOrThrow("QUANTITY")));
+                ar.setReservationType(cursor.getString(cursor.getColumnIndexOrThrow("RESERVATION_TYPE")));
+                ar.setReservationDate(cursor.getString(cursor.getColumnIndexOrThrow("RESERVATION_DATE")));
+                ar.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("STATUS")));
+                adminReservations.add(ar);
             } while (cursor.moveToNext());
             cursor.close();
         }
-        return reservationList;
+        return adminReservations;
     }
 
     public void updateReservationStatus(long resId, String status) {
@@ -324,9 +346,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     // --- Favorite Logic ---
     public boolean addFavorite(long userId, long tripId) {
-        if (isFavorite(userId, tripId)) {
-            return false;
-        }
+        if (isFavorite(userId, tripId)) return false;
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("USER_ID", userId);

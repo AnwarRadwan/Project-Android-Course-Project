@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,26 +56,33 @@ public class MyReservationsFragment extends Fragment {
      * Loads reservations for the logged-in user from the database.
      */
     private void loadReservations() {
-        // Retrieve userId from SharedPreferences (Assumed saved during login)
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
-        long userId = sharedPreferences.getLong("userId", -1);
+        try {
+            // Retrieve userId from SharedPreferences (Assumed saved during login)
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
+            long userId = sharedPreferences.getLong("userId", -1);
 
-        if (userId != -1) {
-            List<Reservation> reservationList = dbHelper.getReservationsByUserId(userId);
+            if (userId != -1) {
+                // Using the updated method name from DataBaseHelper
+                List<Reservation> reservationList = dbHelper.getUserReservations(userId);
 
-            if (reservationList != null && !reservationList.isEmpty()) {
-                // Show RecyclerView and hide empty state
-                rvReservations.setVisibility(View.VISIBLE);
-                layoutEmptyState.setVisibility(View.GONE);
+                if (reservationList != null && !reservationList.isEmpty()) {
+                    // Show RecyclerView and hide empty state
+                    rvReservations.setVisibility(View.VISIBLE);
+                    layoutEmptyState.setVisibility(View.GONE);
 
-                adapter = new ReservationAdapter(reservationList);
-                rvReservations.setAdapter(adapter);
+                    adapter = new ReservationAdapter(reservationList);
+                    rvReservations.setAdapter(adapter);
+                } else {
+                    // No reservations found
+                    showEmptyState();
+                }
             } else {
-                // No reservations found
+                // User not logged in or ID not found
+                Toast.makeText(getContext(), "Please login to view your reservations", Toast.LENGTH_SHORT).show();
                 showEmptyState();
             }
-        } else {
-            // User not logged in or ID not found
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Error loading reservations: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             showEmptyState();
         }
     }

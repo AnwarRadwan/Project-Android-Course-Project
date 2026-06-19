@@ -44,11 +44,11 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tvAdminResUserEmail"
+            android:id="@+id/tvAdminResUserName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="user@example.com"
+            android:text="User: John Doe"
             android:textColor="#666666"
             android:textSize="14sp" />
 
@@ -76,6 +76,15 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tvAdminResType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Type: Premium"
+            android:textColor="#888888"
+            android:textSize="14sp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -93,7 +102,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Change Status"
+                android:text="Update"
                 android:textColor="#2FA084"
                 app:icon="@android:drawable/ic_menu_edit"
                 app:iconTint="#2FA084" />

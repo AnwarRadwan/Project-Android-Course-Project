@@ -21,7 +21,7 @@ import com.example.a1222275_1220495_courseproject.models.AdminReservation;
 
 import java.util.List;
 
-public class ViewReservationsFragment extends Fragment implements AdminReservationAdapter.OnReservationActionListener {
+public class AdminReservationsFragment extends Fragment implements AdminReservationAdapter.OnReservationActionListener {
 
     private RecyclerView rvReservations;
     private AdminReservationAdapter adapter;
@@ -33,12 +33,16 @@ public class ViewReservationsFragment extends Fragment implements AdminReservati
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_admin_reservations, container, false);
 
-        dbHelper = new DataBaseHelper(requireContext());
-        rvReservations = view.findViewById(R.id.rvAdminReservations);
-        emptyView = view.findViewById(R.id.emptyViewAdminRes);
-        rvReservations.setLayoutManager(new LinearLayoutManager(getContext()));
+        try {
+            dbHelper = new DataBaseHelper(requireContext());
+            rvReservations = view.findViewById(R.id.rvAdminReservations);
+            emptyView = view.findViewById(R.id.emptyViewAdminRes);
+            rvReservations.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadReservations();
+            loadReservations();
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Initialization Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
         return view;
     }
@@ -71,10 +75,14 @@ public class ViewReservationsFragment extends Fragment implements AdminReservati
         new AlertDialog.Builder(requireContext())
                 .setTitle("Update Reservation Status")
                 .setItems(statuses, (dialog, which) -> {
-                    String selectedStatus = statuses[which];
-                    dbHelper.updateReservationStatus(reservation.getReservationId(), selectedStatus);
-                    Toast.makeText(getContext(), "Status updated to " + selectedStatus, Toast.LENGTH_SHORT).show();
-                    loadReservations();
+                    try {
+                        String selectedStatus = statuses[which];
+                        dbHelper.updateReservationStatus(reservation.getReservationId(), selectedStatus);
+                        Toast.makeText(getContext(), "Status updated to " + selectedStatus, Toast.LENGTH_SHORT).show();
+                        loadReservations();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .show();
     }
@@ -85,9 +93,13 @@ public class ViewReservationsFragment extends Fragment implements AdminReservati
                 .setTitle("Delete Reservation")
                 .setMessage("Are you sure you want to delete this reservation?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    dbHelper.deleteReservation(reservation.getReservationId());
-                    Toast.makeText(getContext(), "Reservation deleted successfully", Toast.LENGTH_SHORT).show();
-                    loadReservations();
+                    try {
+                        dbHelper.deleteReservation(reservation.getReservationId());
+                        Toast.makeText(getContext(), "Reservation deleted successfully", Toast.LENGTH_SHORT).show();
+                        loadReservations();
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
