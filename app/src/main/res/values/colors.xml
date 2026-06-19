@@ -8,6 +8,7 @@
     <color name="secondary_green">#2FA084</color>
     <color name="accent_green">#6FCF97</color>
     <color name="light_gray">#EEEEEE</color>
+    <color name="dark_gray">#666666</color>
 
     <!-- Splash Screen Colors -->
     <color name="splash_gradient_start">#0B4F3E</color>

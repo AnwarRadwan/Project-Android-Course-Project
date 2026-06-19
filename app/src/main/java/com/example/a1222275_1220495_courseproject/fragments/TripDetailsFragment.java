@@ -94,11 +94,11 @@ public class TripDetailsFragment extends Fragment {
     }
 
     private void bindData() {
-        tvDestination.setText(trip.getDestination());
-        tvCountry.setText(trip.getCountry());
-        tvDuration.setText(trip.getDuration() + " days");
-        tvPrice.setText("$" + trip.getPrice());
-        tvRating.setText("★ " + trip.getRating());
+        tvDestination.setText("Destination: " + trip.getDestination());
+        tvCountry.setText("Country: " + trip.getCountry());
+        tvDuration.setText("Duration: " + trip.getDuration() + " Days");
+        tvPrice.setText("Price: $" + trip.getPrice());
+        tvRating.setText("Rating: " + trip.getRating());
         tvDescription.setText(trip.getDescription());
 
         Glide.with(this)

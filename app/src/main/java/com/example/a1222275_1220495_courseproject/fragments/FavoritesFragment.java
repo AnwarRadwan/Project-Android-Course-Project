@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,6 @@ import com.example.a1222275_1220495_courseproject.R;
 import com.example.a1222275_1220495_courseproject.adapters.FavoriteAdapter;
 import com.example.a1222275_1220495_courseproject.database.DataBaseHelper;
 import com.example.a1222275_1220495_courseproject.models.Trip;
-import com.example.a1222275_1220495_courseproject.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,7 @@ import java.util.List;
 public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFavoriteActionListener {
 
     private RecyclerView rvFavorites;
+    private TextView tvEmptyFavorites;
     private FavoriteAdapter adapter;
     private List<Trip> favoriteTrips;
     private DataBaseHelper dbHelper;
@@ -43,6 +44,7 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
 
         // Initialize UI components and Database Helper
         rvFavorites = view.findViewById(R.id.rvFavorites);
+        tvEmptyFavorites = view.findViewById(R.id.tvEmptyFavorites);
         dbHelper = new DataBaseHelper(getContext());
 
         // Setup RecyclerView with a Linear Layout Manager
@@ -58,27 +60,35 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
      * Retrieves the current user's ID and loads their favorites from the database.
      */
     private void loadFavorites() {
-        // Get user email from SharedPreferences
+        // Get user ID from SharedPreferences
         SharedPreferences prefs = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
-        String email = prefs.getString("remember_email", null);
+        currentUserId = prefs.getLong("userId", -1);
 
-        if (email != null) {
-            // Fetch user details to get the ID
-            User user = dbHelper.getUserByEmail(email);
-            if (user != null) {
-                currentUserId = user.getId();
-                // Fetch the list of favorite trips from the database
-                favoriteTrips = dbHelper.getFavoritesByUser(currentUserId);
-            } else {
-                favoriteTrips = new ArrayList<>();
-            }
+        if (currentUserId != -1) {
+            // Fetch the list of favorite trips from the database
+            favoriteTrips = dbHelper.getFavoritesByUser(currentUserId);
         } else {
             favoriteTrips = new ArrayList<>();
         }
 
+        updateUI();
+
         // Initialize and set the adapter
         adapter = new FavoriteAdapter(favoriteTrips, this);
         rvFavorites.setAdapter(adapter);
+    }
+
+    /**
+     * Updates the visibility of the RecyclerView and Empty State Message based on the list size.
+     */
+    private void updateUI() {
+        if (favoriteTrips == null || favoriteTrips.isEmpty()) {
+            rvFavorites.setVisibility(View.GONE);
+            tvEmptyFavorites.setVisibility(View.VISIBLE);
+        } else {
+            rvFavorites.setVisibility(View.VISIBLE);
+            tvEmptyFavorites.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -92,6 +102,10 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
             // Remove from local list and notify adapter
             favoriteTrips.remove(position);
             adapter.notifyItemRemoved(position);
+            
+            // Check if we need to show the empty message
+            updateUI();
+
             Toast.makeText(getContext(), trip.getDestination() + " removed from favorites", Toast.LENGTH_SHORT).show();
         }
     }
