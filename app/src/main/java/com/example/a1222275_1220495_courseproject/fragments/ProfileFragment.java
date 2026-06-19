@@ -97,9 +97,9 @@ public class ProfileFragment extends Fragment {
         if (userId != -1) {
             currentUser = dbHelper.getUserById(userId);
             if (currentUser != null) {
-                tvEmail.setText(currentUser.getEmail());
-                tvGender.setText(currentUser.getGender());
-                tvCategory.setText(currentUser.getCategory());
+                tvEmail.setText("Electronic Correspondence: " + currentUser.getEmail());
+                tvGender.setText("Biological Identity: " + currentUser.getGender());
+                tvCategory.setText("User Classification: " + currentUser.getCategory());
                 etFirstName.setText(currentUser.getFirstName());
                 etLastName.setText(currentUser.getLastName());
                 etPhone.setText(currentUser.getPhone());
@@ -132,15 +132,15 @@ public class ProfileFragment extends Fragment {
         String phone = etPhone.getText().toString().trim();
 
         if (firstName.length() < 3) {
-            etFirstName.setError("Minimum 3 characters");
+            etFirstName.setError("A minimum of three alphabetical characters is mandatory for the given name.");
             return;
         }
         if (lastName.length() < 3) {
-            etLastName.setError("Minimum 3 characters");
+            etLastName.setError("The official family surname must consist of at least three characters.");
             return;
         }
         if (!phone.matches("^05\\d{8}$")) {
-            etPhone.setError("Format: 05XXXXXXXX");
+            etPhone.setError("Telephonic identification must adhere to the standard 05XXXXXXXX format.");
             return;
         }
 
@@ -150,7 +150,7 @@ public class ProfileFragment extends Fragment {
         currentUser.setImage(selectedImageUriStr);
 
         dbHelper.updateUser(currentUser);
-        Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "User profile synchronization has been successfully executed.", Toast.LENGTH_SHORT).show();
     }
 
     private void updatePassword() {
@@ -158,17 +158,17 @@ public class ProfileFragment extends Fragment {
         String confirmPass = etConfirmPassword.getText().toString().trim();
 
         if (newPass.isEmpty()) {
-            etNewPassword.setError("Enter new password");
+            etNewPassword.setError("Please supply a valid security authentication passcode.");
             return;
         }
 
         if (newPass.length() < 6 || !newPass.matches(".*[a-zA-Z].*") || !newPass.matches(".*\\d.*")) {
-            etNewPassword.setError("Min 6 chars, 1 letter and 1 number");
+            etNewPassword.setError("Passcode complexity: minimum 6 characters, including alphanumeric combinations.");
             return;
         }
 
         if (!newPass.equals(confirmPass)) {
-            etConfirmPassword.setError("Passwords do not match");
+            etConfirmPassword.setError("The provided security passcodes exhibit a lack of congruency.");
             return;
         }
 
@@ -177,7 +177,7 @@ public class ProfileFragment extends Fragment {
         
         etNewPassword.setText("");
         etConfirmPassword.setText("");
-        Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Security authentication credentials updated with success.", Toast.LENGTH_SHORT).show();
     }
 
     private String hashPassword(String password) {
