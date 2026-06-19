@@ -54,21 +54,29 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert("USERS", null, values);
     }
 
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("USERS", null, null, null, null, null, "ID DESC");
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                users.add(extractUser(cursor));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return users;
+    }
+
+    public void deleteUser(long userId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("USERS", "ID = ?", new String[]{String.valueOf(userId)});
+    }
+
     public User getUserByEmail(String email) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("USERS", null, "EMAIL = ?", new String[]{email}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            User user = new User(
-                    cursor.getLong(cursor.getColumnIndexOrThrow("ID")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("EMAIL")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("FIRSTNAME")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("LASTNAME")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("PASSWORD")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("GENDER")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("CATEGORY")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("PHONE")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
-            );
+            User user = extractUser(cursor);
             cursor.close();
             return user;
         }
@@ -80,22 +88,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query("USERS", null, "ID = ?", new String[]{String.valueOf(id)}, null, null, null);
         if (cursor != null && cursor.moveToFirst()) {
-            User user = new User(
-                    cursor.getLong(cursor.getColumnIndexOrThrow("ID")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("EMAIL")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("FIRSTNAME")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("LASTNAME")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("PASSWORD")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("GENDER")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("CATEGORY")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("PHONE")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
-            );
+            User user = extractUser(cursor);
             cursor.close();
             return user;
         }
         if (cursor != null) cursor.close();
         return null;
+    }
+
+    private User extractUser(Cursor cursor) {
+        return new User(
+                cursor.getLong(cursor.getColumnIndexOrThrow("ID")),
+                cursor.getString(cursor.getColumnIndexOrThrow("EMAIL")),
+                cursor.getString(cursor.getColumnIndexOrThrow("FIRSTNAME")),
+                cursor.getString(cursor.getColumnIndexOrThrow("LASTNAME")),
+                cursor.getString(cursor.getColumnIndexOrThrow("PASSWORD")),
+                cursor.getString(cursor.getColumnIndexOrThrow("GENDER")),
+                cursor.getString(cursor.getColumnIndexOrThrow("CATEGORY")),
+                cursor.getString(cursor.getColumnIndexOrThrow("PHONE")),
+                cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
+        );
     }
 
     public void updateUser(User user) {
@@ -281,9 +293,5 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public void insertTestUsers() {
         // (Existing implementation for testing)
-    }
-
-    private String hashPassword(String password) {
-        return password; // Simple for testing
     }
 }

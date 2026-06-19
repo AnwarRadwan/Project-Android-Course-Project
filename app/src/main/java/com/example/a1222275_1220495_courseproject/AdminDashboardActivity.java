@@ -15,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.example.a1222275_1220495_courseproject.fragments.AdminHomeFragment;
+import com.example.a1222275_1220495_courseproject.fragments.ViewUsersFragment;
 import com.google.android.material.navigation.NavigationView;
 
 public class AdminDashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,9 +58,11 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         if (id == R.id.nav_admin_home) {
             selectedFragment = new AdminHomeFragment();
         } else if (id == R.id.nav_add_admin) {
-            Toast.makeText(this, "Add Admin functionality coming soon", Toast.LENGTH_SHORT).show();
+            // Start AddAdminActivity
+            Intent intent = new Intent(this, AddAdminActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_view_users) {
-            Toast.makeText(this, "View Users functionality coming soon", Toast.LENGTH_SHORT).show();
+            selectedFragment = new ViewUsersFragment();
         } else if (id == R.id.nav_manage_trips) {
             Toast.makeText(this, "Manage Trips functionality coming soon", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_view_reservations) {

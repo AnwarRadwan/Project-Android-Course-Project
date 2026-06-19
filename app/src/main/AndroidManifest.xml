@@ -36,6 +36,11 @@
             android:label="Admin Panel" />
 
         <activity
+            android:name=".AddAdminActivity"
+            android:exported="false"
+            android:label="Create Admin" />
+
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
