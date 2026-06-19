@@ -76,6 +76,45 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public User getUserById(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("USERS", null, "ID = ?", new String[]{String.valueOf(id)}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            User user = new User(
+                    cursor.getLong(cursor.getColumnIndexOrThrow("ID")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("EMAIL")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("FIRSTNAME")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("LASTNAME")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("PASSWORD")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("GENDER")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("CATEGORY")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("PHONE")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("IMAGE"))
+            );
+            cursor.close();
+            return user;
+        }
+        if (cursor != null) cursor.close();
+        return null;
+    }
+
+    public void updateUser(User user) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("FIRSTNAME", user.getFirstName());
+        values.put("LASTNAME", user.getLastName());
+        values.put("PHONE", user.getPhone());
+        values.put("IMAGE", user.getImage());
+        db.update("USERS", values, "ID = ?", new String[]{String.valueOf(user.getId())});
+    }
+
+    public void updateUserPassword(long userId, String newPassword) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("PASSWORD", newPassword);
+        db.update("USERS", values, "ID = ?", new String[]{String.valueOf(userId)});
+    }
+
     // --- Trip Methods ---
     public void insertTrip(Trip trip) {
         SQLiteDatabase db = getWritableDatabase();
