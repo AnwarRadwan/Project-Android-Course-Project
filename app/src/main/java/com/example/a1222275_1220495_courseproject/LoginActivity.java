@@ -30,6 +30,10 @@ public class LoginActivity extends AppCompatActivity {
     private static final String KEY_EMAIL = "remember_email";
     private static final String KEY_USER_ID = "userId";
 
+    // Predefined Admin Credentials
+    private static final String ADMIN_EMAIL = "admin@admin.com";
+    private static final String ADMIN_PASSWORD = "Admin123!";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,13 +78,23 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // 1. Check for Admin credentials first
+        if (email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
+            Toast.makeText(this, "Admin Login Successful", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+        // 2. Normal User flow
         User user = dbHelper.getUserByEmail(email);
         if (user != null) {
             String hashedPassword = hashPassword(password);
             if (user.getPassword().equals(hashedPassword)) {
                 // Success
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putLong(KEY_USER_ID, user.getId()); // حفظ الـ userId هنا
+                editor.putLong(KEY_USER_ID, user.getId());
                 
                 if (cbRememberMe.isChecked()) {
                     editor.putString(KEY_EMAIL, email);
