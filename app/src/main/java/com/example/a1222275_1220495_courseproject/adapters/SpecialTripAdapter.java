@@ -19,6 +19,7 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
+// Adapter for special trips section
 public class SpecialTripAdapter extends RecyclerView.Adapter<SpecialTripAdapter.ViewHolder> {
 
     private List<Trip> trips;
@@ -27,6 +28,7 @@ public class SpecialTripAdapter extends RecyclerView.Adapter<SpecialTripAdapter.
     private OnTripClickListener clickListener;
     private DataBaseHelper dbHelper;
 
+    // Interface for clicks
     public interface OnTripClickListener {
         void onViewDetails(Trip trip);
     }
@@ -42,6 +44,7 @@ public class SpecialTripAdapter extends RecyclerView.Adapter<SpecialTripAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate special trip layout
         View view = LayoutInflater.from(context).inflate(R.layout.item_special_trip, parent, false);
         return new ViewHolder(view);
     }
@@ -50,6 +53,7 @@ public class SpecialTripAdapter extends RecyclerView.Adapter<SpecialTripAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Trip trip = trips.get(position);
 
+        // Populate details
         holder.tvDestination.setText(trip.getDestination());
         holder.tvCountry.setText(trip.getCountry());
         holder.tvDuration.setText(trip.getDuration() + " Days");
@@ -57,17 +61,20 @@ public class SpecialTripAdapter extends RecyclerView.Adapter<SpecialTripAdapter.
         holder.tvRating.setText("Rating: " + trip.getRating());
         holder.tvDescription.setText(trip.getDescription());
 
+        // Load image with Glide
         Glide.with(context)
                 .load(trip.getImage())
                 .placeholder(R.color.light_gray)
                 .into(holder.imgTrip);
 
+        // Details click
         holder.btnViewDetails.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onViewDetails(trip);
             }
         });
 
+        // Add to favorite
         holder.btnAddFavorite.setOnClickListener(v -> {
             if (userId == -1) {
                 Toast.makeText(context, "Please login first", Toast.LENGTH_SHORT).show();
@@ -87,6 +94,7 @@ public class SpecialTripAdapter extends RecyclerView.Adapter<SpecialTripAdapter.
         return trips.size();
     }
 
+    // View holder for special trips
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgTrip;
         TextView tvDestination, tvCountry, tvDuration, tvPrice, tvRating, tvDescription;

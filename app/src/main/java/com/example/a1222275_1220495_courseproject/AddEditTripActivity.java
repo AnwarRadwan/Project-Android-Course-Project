@@ -11,6 +11,7 @@ import com.example.a1222275_1220495_courseproject.models.Trip;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+// Activity for adding or editing trips
 public class AddEditTripActivity extends AppCompatActivity {
 
     private TextInputEditText etDestination, etCountry, etDuration, etPrice, etRating, etDescription, etImageUrl;
@@ -29,6 +30,7 @@ public class AddEditTripActivity extends AppCompatActivity {
 
         initViews();
 
+        // Check if editing existing trip
         if (getIntent().hasExtra("TRIP_ID")) {
             tripId = getIntent().getLongExtra("TRIP_ID", -1);
             isEditMode = true;
@@ -39,6 +41,7 @@ public class AddEditTripActivity extends AppCompatActivity {
         btnSaveTrip.setOnClickListener(v -> saveTrip());
     }
 
+    // Initialize UI views
     private void initViews() {
         tvTitle = findViewById(R.id.tvAddEditTripTitle);
         etDestination = findViewById(R.id.etTripDestination);
@@ -51,6 +54,7 @@ public class AddEditTripActivity extends AppCompatActivity {
         btnSaveTrip = findViewById(R.id.btnSaveTrip);
     }
 
+    // Load trip data for editing
     private void loadTripData() {
         Trip trip = dbHelper.getTripById((int) tripId);
         if (trip != null) {
@@ -64,6 +68,7 @@ public class AddEditTripActivity extends AppCompatActivity {
         }
     }
 
+    // Save trip to database
     private void saveTrip() {
         String dest = etDestination.getText().toString().trim();
         String country = etCountry.getText().toString().trim();

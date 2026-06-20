@@ -1,5 +1,6 @@
 package com.example.a1222275_1220495_courseproject.models;
 
+// User model class
 public class User {
 
     private long id;

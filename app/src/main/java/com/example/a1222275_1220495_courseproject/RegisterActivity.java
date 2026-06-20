@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+// Registration screen
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText etEmail, etFirstName, etLastName, etPassword, etConfirmPassword, etPhone;
@@ -33,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         dbHelper = new DataBaseHelper(this);
 
+        // Init views
         etEmail = findViewById(R.id.etEmail);
         etFirstName = findViewById(R.id.etFirstName);
         etLastName = findViewById(R.id.etLastName);
@@ -43,7 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
         spinnerCategory = findViewById(R.id.spinnerCategory);
         btnRegister = findViewById(R.id.btnRegister);
 
-        // Setup Spinners
+        // Setup spinners
         String[] genders = {"Male", "Female"};
         ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, genders);
         spinnerGender.setAdapter(genderAdapter);
@@ -52,6 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories);
         spinnerCategory.setAdapter(categoryAdapter);
 
+        // Register button
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    // Register logic
     private void registerUser() {
         String email = etEmail.getText().toString().trim();
         String firstName = etFirstName.getText().toString().trim();
@@ -74,15 +78,15 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if user already exists
+        // Email check
         if (dbHelper.getUserByEmail(email) != null) {
             Toast.makeText(this, "Email already registered", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Encrypt Password
         String encryptedPassword = hashPassword(password);
 
+        // Create user
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setFirstName(firstName);
@@ -91,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
         newUser.setGender(gender);
         newUser.setCategory(category);
         newUser.setPhone(phone);
-        newUser.setImage(""); // Default empty image
+        newUser.setImage(""); 
 
         dbHelper.insertUser(newUser);
 
@@ -100,6 +104,7 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
+    // Validation
     private boolean validateInputs(String email, String fname, String lname, String pass, String confirmPass, String phone) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Invalid email format");
@@ -128,6 +133,7 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
+    // Password hashing
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -140,7 +146,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            return password; // Fallback (should not happen)
+            return password;
         }
     }
 }

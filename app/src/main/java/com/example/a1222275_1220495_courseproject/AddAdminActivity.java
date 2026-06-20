@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+// Activity to add admin
 public class AddAdminActivity extends AppCompatActivity {
 
     private TextInputEditText etEmail, etFirstName, etLastName, etPassword, etPhone;
@@ -38,6 +39,7 @@ public class AddAdminActivity extends AppCompatActivity {
         btnSaveAdmin.setOnClickListener(v -> saveAdmin());
     }
 
+    // Save admin to db
     private void saveAdmin() {
         String email = etEmail.getText().toString().trim();
         String firstName = etFirstName.getText().toString().trim();
@@ -62,6 +64,7 @@ public class AddAdminActivity extends AppCompatActivity {
         finish();
     }
 
+    // Validate input fields
     private boolean validateInputs(String email, String fn, String ln, String pass, String phone) {
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Valid email required");
@@ -86,6 +89,7 @@ public class AddAdminActivity extends AppCompatActivity {
         return true;
     }
 
+    // Hash password using SHA-256
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

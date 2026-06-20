@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+// Splash screen activity
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView imageViewLogo;
@@ -24,35 +25,30 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Initialize UI components
+        // Init views
         mainLayout = findViewById(R.id.mainSplashLayout);
         imageViewLogo = findViewById(R.id.imageViewLogo);
         textViewAppName = findViewById(R.id.textViewAppName);
         textViewTagline = findViewById(R.id.textViewTagline);
 
-        // Load all 4 animation files
+        // Load animations
         Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
         Animation rotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
         Animation zoomIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
 
-        // Create an AnimationSet for the Logo to combine Zoom and Rotate
+        // Setup logo animation
         AnimationSet logoAnimationSet = new AnimationSet(true);
         logoAnimationSet.addAnimation(zoomIn);
         logoAnimationSet.addAnimation(rotate);
 
-        // Start animations based on requirements
-        // 1. Fade in for the overall background/layout
+        // Start animations
         mainLayout.startAnimation(fadeIn);
-
-        // 2. Rotate + Zoom In for the logo
         imageViewLogo.startAnimation(logoAnimationSet);
-
-        // 3. Slide up for the app name and tagline
         textViewAppName.startAnimation(slideUp);
         textViewTagline.startAnimation(slideUp);
 
-        // Navigation logic after 3 seconds
+        // Delayed navigation
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

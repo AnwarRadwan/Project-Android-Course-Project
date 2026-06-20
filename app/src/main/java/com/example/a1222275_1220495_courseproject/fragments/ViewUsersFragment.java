@@ -20,6 +20,7 @@ import com.example.a1222275_1220495_courseproject.models.User;
 
 import java.util.List;
 
+// Fragment to view users
 public class ViewUsersFragment extends Fragment implements UserAdapter.OnUserDeleteListener {
 
     private RecyclerView rvUsers;
@@ -29,6 +30,7 @@ public class ViewUsersFragment extends Fragment implements UserAdapter.OnUserDel
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_view_users, container, false);
 
         dbHelper = new DataBaseHelper(requireContext());
@@ -40,6 +42,7 @@ public class ViewUsersFragment extends Fragment implements UserAdapter.OnUserDel
         return view;
     }
 
+    // Load users from db
     private void loadUsers() {
         List<User> userList = dbHelper.getAllUsers();
         if (adapter == null) {
@@ -50,14 +53,15 @@ public class ViewUsersFragment extends Fragment implements UserAdapter.OnUserDel
         }
     }
 
+    // Delete user action
     @Override
     public void onDeleteClick(User user) {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Delete User")
-                .setMessage("Are you sure you want to delete user: " + user.getEmail() + "?")
+                .setTitle("Delete")
+                .setMessage("Are you sure?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     dbHelper.deleteUser(user.getId());
-                    Toast.makeText(getContext(), "User deleted successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
                     loadUsers();
                 })
                 .setNegativeButton("Cancel", null)

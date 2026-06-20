@@ -23,6 +23,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
+// Special section fragment
 public class SpecialSectionFragment extends Fragment {
 
     private RecyclerView rvPopular, rvBestOffers;
@@ -35,9 +36,10 @@ public class SpecialSectionFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_special_section, container, false);
 
-        // Initialize UI components
+        // Init views
         tabLayout = view.findViewById(R.id.tabLayout);
         layoutPopular = view.findViewById(R.id.layoutPopular);
         layoutBestOffers = view.findViewById(R.id.layoutBestOffers);
@@ -50,7 +52,6 @@ public class SpecialSectionFragment extends Fragment {
         dbHelper = new DataBaseHelper(getContext());
         loadUserId();
 
-        // Setup Layout Managers
         rvPopular.setLayoutManager(new LinearLayoutManager(getContext()));
         rvBestOffers.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -60,6 +61,7 @@ public class SpecialSectionFragment extends Fragment {
         return view;
     }
 
+    // Setup tabs
     private void setupTabs() {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -81,13 +83,14 @@ public class SpecialSectionFragment extends Fragment {
         });
     }
 
+    // Get user id
     private void loadUserId() {
         SharedPreferences prefs = requireContext().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
         currentUserId = prefs.getLong("userId", -1);
     }
 
+    // Load data from db
     private void loadData() {
-        // 1. Load Popular Destinations (Rating >= 4.5)
         List<Trip> popularTrips = dbHelper.getPopularDestinations();
         if (popularTrips.isEmpty()) {
             tvEmptyPopular.setVisibility(View.VISIBLE);
@@ -99,7 +102,6 @@ public class SpecialSectionFragment extends Fragment {
             rvPopular.setAdapter(popularAdapter);
         }
 
-        // 2. Load Best Travel Offers (Price Ascending)
         List<Trip> bestOffers = dbHelper.getBestTravelOffers();
         if (bestOffers.isEmpty()) {
             tvEmptyOffers.setVisibility(View.VISIBLE);
@@ -112,10 +114,11 @@ public class SpecialSectionFragment extends Fragment {
         }
     }
 
+    // Open trip details
     private void openTripDetails(Trip trip) {
-        // Navigate to TripDetailsFragment passing the trip ID
         Fragment detailsFragment = TripDetailsFragment.newInstance((int) trip.getTripId());
-        getParentFragmentManager().beginTransaction()
+        getParentFragmentManager()
+                .beginTransaction()
                 .replace(R.id.fragment_container, detailsFragment)
                 .addToBackStack(null)
                 .commit();

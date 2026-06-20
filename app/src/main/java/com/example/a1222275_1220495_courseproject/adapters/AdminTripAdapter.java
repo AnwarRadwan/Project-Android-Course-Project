@@ -16,11 +16,13 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
+// Adapter for admin trips
 public class AdminTripAdapter extends RecyclerView.Adapter<AdminTripAdapter.AdminTripViewHolder> {
 
     private List<Trip> tripList;
     private OnTripActionListener listener;
 
+    // Interface for trip actions
     public interface OnTripActionListener {
         void onEdit(Trip trip);
         void onDelete(Trip trip);
@@ -34,7 +36,7 @@ public class AdminTripAdapter extends RecyclerView.Adapter<AdminTripAdapter.Admi
     @NonNull
     @Override
     public AdminTripViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Fixed: Use R.layout instead of R.id for inflation
+        // Inflate trip item
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_trip, parent, false);
         return new AdminTripViewHolder(view);
     }
@@ -42,6 +44,7 @@ public class AdminTripAdapter extends RecyclerView.Adapter<AdminTripAdapter.Admi
     @Override
     public void onBindViewHolder(@NonNull AdminTripViewHolder holder, int position) {
         Trip trip = tripList.get(position);
+        // Set trip info
         holder.tvDestination.setText(trip.getDestination());
         holder.tvCountry.setText(trip.getCountry());
         holder.tvPrice.setText("$" + trip.getPrice());
@@ -49,12 +52,14 @@ public class AdminTripAdapter extends RecyclerView.Adapter<AdminTripAdapter.Admi
         holder.tvDuration.setText(trip.getDuration() + " Days");
         holder.tvDescription.setText(trip.getDescription());
 
+        // Load trip image
         Glide.with(holder.itemView.getContext())
                 .load(trip.getImage())
                 .placeholder(R.drawable.travel_logo1)
                 .error(R.drawable.travel_logo1)
                 .into(holder.ivTripImage);
 
+        // Edit and Delete buttons
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(trip));
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(trip));
     }
@@ -64,11 +69,13 @@ public class AdminTripAdapter extends RecyclerView.Adapter<AdminTripAdapter.Admi
         return tripList.size();
     }
 
+    // Refresh list data
     public void updateList(List<Trip> newList) {
         this.tripList = newList;
         notifyDataSetChanged();
     }
 
+    // ViewHolder class
     static class AdminTripViewHolder extends RecyclerView.ViewHolder {
         ImageView ivTripImage;
         TextView tvDestination, tvCountry, tvPrice, tvRating, tvDuration, tvDescription;

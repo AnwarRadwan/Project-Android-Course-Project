@@ -16,17 +16,13 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
-/**
- * FavoriteAdapter: RecyclerView adapter for displaying the list of favorite trips.
- */
+// Adapter for favorite trips
 public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder> {
 
     private List<Trip> favoriteList;
     private OnFavoriteActionListener listener;
 
-    /**
-     * Interface for handling actions on favorite items (Remove and Reserve).
-     */
+    // Listener interface
     public interface OnFavoriteActionListener {
         void onRemove(Trip trip, int position);
         void onReserve(Trip trip);
@@ -40,7 +36,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
     @NonNull
     @Override
     public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the custom item layout for favorites
+        // Inflate layout
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_favorite, parent, false);
         return new FavoriteViewHolder(view);
     }
@@ -49,27 +45,27 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
     public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
         Trip trip = favoriteList.get(position);
 
-        // Set trip details to views
+        // Set data
         holder.tvDestination.setText(trip.getDestination());
         holder.tvCountry.setText(trip.getCountry());
         holder.tvPrice.setText("$" + trip.getPrice());
         holder.tvRating.setText("★ " + trip.getRating());
 
-        // Load trip image using Glide
+        // Load image
         Glide.with(holder.itemView.getContext())
                 .load(trip.getImage())
                 .placeholder(R.color.light_gray)
                 .centerCrop()
                 .into(holder.imgTrip);
 
-        // Handle Remove button click
+        // Remove click
         holder.btnRemove.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onRemove(trip, position);
             }
         });
 
-        // Handle Reserve button click
+        // Reserve click
         holder.btnReserve.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onReserve(trip);
@@ -82,9 +78,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
         return favoriteList.size();
     }
 
-    /**
-     * ViewHolder class for Favorite items.
-     */
+    // ViewHolder class
     static class FavoriteViewHolder extends RecyclerView.ViewHolder {
         ImageView imgTrip;
         TextView tvDestination, tvCountry, tvPrice, tvRating;

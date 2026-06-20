@@ -22,10 +22,7 @@ import com.example.a1222275_1220495_courseproject.models.Reservation;
 
 import java.util.List;
 
-/**
- * Fragment to display the user's reservations.
- * Fetches data from SQLite and handles empty state UI.
- */
+// Fragment for user reservations
 public class MyReservationsFragment extends Fragment {
 
     private RecyclerView rvReservations;
@@ -36,13 +33,13 @@ public class MyReservationsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate layout
         View view = inflater.inflate(R.layout.fragment_my_reservations, container, false);
 
-        // Initialize UI components
+        // Init views
         rvReservations = view.findViewById(R.id.rvReservations);
         layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
 
-        // Setup RecyclerView
         rvReservations.setLayoutManager(new LinearLayoutManager(getContext()));
 
         dbHelper = new DataBaseHelper(getContext());
@@ -52,41 +49,36 @@ public class MyReservationsFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Loads reservations for the logged-in user from the database.
-     */
+    // Load reservations
     private void loadReservations() {
         try {
-            // Retrieve userId from SharedPreferences (Assumed saved during login)
+            // Get user id
             SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
             long userId = sharedPreferences.getLong("userId", -1);
 
             if (userId != -1) {
-                // Using the updated method name from DataBaseHelper
                 List<Reservation> reservationList = dbHelper.getUserReservations(userId);
 
                 if (reservationList != null && !reservationList.isEmpty()) {
-                    // Show RecyclerView and hide empty state
                     rvReservations.setVisibility(View.VISIBLE);
                     layoutEmptyState.setVisibility(View.GONE);
 
                     adapter = new ReservationAdapter(reservationList);
                     rvReservations.setAdapter(adapter);
                 } else {
-                    // No reservations found
                     showEmptyState();
                 }
             } else {
-                // User not logged in or ID not found
-                Toast.makeText(getContext(), "Please login to view your reservations", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please login", Toast.LENGTH_SHORT).show();
                 showEmptyState();
             }
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Error loading reservations: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             showEmptyState();
         }
     }
 
+    // Handle empty state
     private void showEmptyState() {
         rvReservations.setVisibility(View.GONE);
         layoutEmptyState.setVisibility(View.VISIBLE);

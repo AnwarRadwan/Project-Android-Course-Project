@@ -1,5 +1,6 @@
 package com.example.a1222275_1220495_courseproject.models;
 
+// Favorite model class
 public class Favorite {
 
     private long favoriteId;

@@ -1,5 +1,6 @@
 package com.example.a1222275_1220495_courseproject.models;
 
+// Reservation model class
 public class Reservation {
 
     private long reservationId;

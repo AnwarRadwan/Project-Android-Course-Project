@@ -1,5 +1,6 @@
 package com.example.a1222275_1220495_courseproject.models;
 
+// Trip model class
 public class Trip {
 
     private long tripId;
@@ -83,7 +84,7 @@ public class Trip {
 
     public String getDescription() {
         return description;
-    }
+  }
 
     public void setDescription(String description) {
         this.description = description;

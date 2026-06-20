@@ -1,7 +1,10 @@
 package com.example.a1222275_1220495_courseproject;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
@@ -11,6 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.a1222275_1220495_courseproject.database.DataBaseHelper;
 import com.example.a1222275_1220495_courseproject.models.User;
@@ -19,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+// Login screen
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etEmail, etPassword;
@@ -30,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String KEY_EMAIL = "remember_email";
     private static final String KEY_USER_ID = "userId";
 
-    // Predefined Admin Credentials
+    // Hardcoded admin
     private static final String ADMIN_EMAIL = "admin@admin.com";
     private static final String ADMIN_PASSWORD = "Admin123!";
 
@@ -39,22 +46,25 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // Init database and prefs
         dbHelper = new DataBaseHelper(this);
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
 
+        // Init views
         etEmail = findViewById(R.id.etLoginEmail);
         etPassword = findViewById(R.id.etLoginPassword);
         cbRememberMe = findViewById(R.id.cbRememberMe);
         btnLogin = findViewById(R.id.btnLogin);
         btnGoToRegister = findViewById(R.id.btnGoToRegister);
 
-        // Check for remembered email
+        // Load saved email
         String savedEmail = sharedPreferences.getString(KEY_EMAIL, "");
         if (!savedEmail.isEmpty()) {
             etEmail.setText(savedEmail);
             cbRememberMe.setChecked(true);
         }
 
+        // Login button
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,14 +72,23 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Register button
         btnGoToRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
+
+        // Request notification permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
     }
 
+    // Handle login logic
     private void performLogin() {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
@@ -78,8 +97,9 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // 1. Check for Admin credentials first
+        // Admin login check
         if (email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
+            sendWelcomeNotification("Admin");
             Toast.makeText(this, "Admin Login Successful", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
             startActivity(intent);
@@ -87,12 +107,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // 2. Normal User flow
+        // User login check
         User user = dbHelper.getUserByEmail(email);
         if (user != null) {
             String hashedPassword = hashPassword(password);
             if (user.getPassword().equals(hashedPassword)) {
-                // Success
+                // Save session
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putLong(KEY_USER_ID, user.getId());
                 
@@ -103,6 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 editor.apply();
 
+                sendWelcomeNotification(user.getFirstName());
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -115,6 +136,22 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // Send notification
+    private void sendWelcomeNotification(String name) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle("Welcome Back!")
+                .setContentText("Hello " + name + ", we're glad to see you again!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            notificationManager.notify(1, builder.build());
+        }
+    }
+
+    // Input validation
     private boolean validateInputs(String email, String pass) {
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError(getString(R.string.err_invalid_email));
@@ -127,6 +164,7 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    // Hash password
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

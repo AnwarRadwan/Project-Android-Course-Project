@@ -1,5 +1,6 @@
 package com.example.a1222275_1220495_courseproject.models;
 
+// Admin reservation model
 public class AdminReservation {
     private long reservationId;
     private String userName;

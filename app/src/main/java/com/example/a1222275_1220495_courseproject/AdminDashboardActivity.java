@@ -20,6 +20,7 @@ import com.example.a1222275_1220495_courseproject.fragments.AdminReservationsFra
 import com.example.a1222275_1220495_courseproject.fragments.ViewUsersFragment;
 import com.google.android.material.navigation.NavigationView;
 
+// Admin dashboard activity
 public class AdminDashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
@@ -29,12 +30,14 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
 
+        // Setup toolbar
         Toolbar toolbar = findViewById(R.id.admin_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Admin Dashboard");
         }
 
+        // Setup drawer
         drawerLayout = findViewById(R.id.admin_drawer_layout);
         NavigationView navigationView = findViewById(R.id.admin_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -44,7 +47,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        // Load Admin Home Fragment by default
+        // Load default fragment
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.admin_fragment_container,
                     new AdminHomeFragment()).commit();
@@ -52,6 +55,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         }
     }
 
+    // Handle menu selection
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment selectedFragment = null;
@@ -60,7 +64,6 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         if (id == R.id.nav_admin_home) {
             selectedFragment = new AdminHomeFragment();
         } else if (id == R.id.nav_add_admin) {
-            // Start AddAdminActivity
             Intent intent = new Intent(this, AddAdminActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_view_users) {
@@ -82,6 +85,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         return true;
     }
 
+    // Show logout confirmation
     private void showLogoutConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Logout")
@@ -91,6 +95,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
                 .show();
     }
 
+    // Handle logout action
     private void handleLogout() {
         Toast.makeText(this, "Admin logged out successfully", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(AdminDashboardActivity.this, LoginActivity.class);
@@ -99,6 +104,7 @@ public class AdminDashboardActivity extends AppCompatActivity implements Navigat
         finish();
     }
 
+    // Handle back press
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

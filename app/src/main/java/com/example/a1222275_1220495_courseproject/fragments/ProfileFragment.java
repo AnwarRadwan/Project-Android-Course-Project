@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+// User profile fragment
 public class ProfileFragment extends Fragment {
 
     private ShapeableImageView imgProfile;
@@ -45,12 +46,18 @@ public class ProfileFragment extends Fragment {
     private User currentUser;
     private String selectedImageUriStr = "";
 
+    // Image picker launcher
     private final ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri imageUri = result.getData().getData();
                     if (imageUri != null) {
+                        try {
+                            getContext().getContentResolver().takePersistableUriPermission(imageUri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        } catch (SecurityException e) {
+                        }
                         selectedImageUriStr = imageUri.toString();
                         Glide.with(this).load(imageUri).into(imgProfile);
                     }
@@ -73,6 +80,7 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
+    // Initialize views
     private void initViews(View view) {
         imgProfile = view.findViewById(R.id.imgProfile);
         fabEditImage = view.findViewById(R.id.fabEditImage);
@@ -88,11 +96,13 @@ public class ProfileFragment extends Fragment {
         btnUpdatePassword = view.findViewById(R.id.btnUpdatePassword);
     }
 
+    // Get user id
     private void loadUserId() {
         SharedPreferences prefs = requireContext().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
         userId = prefs.getLong("userId", -1);
     }
 
+    // Load user data
     private void loadUserData() {
         if (userId != -1) {
             currentUser = dbHelper.getUserById(userId);
@@ -108,16 +118,19 @@ public class ProfileFragment extends Fragment {
                 if (selectedImageUriStr != null && !selectedImageUriStr.isEmpty()) {
                     Glide.with(this).load(Uri.parse(selectedImageUriStr)).into(imgProfile);
                 } else {
-                    // Fixed: Use android.R.drawable to reference the system camera icon
                     imgProfile.setImageResource(android.R.drawable.ic_menu_camera);
                 }
             }
         }
     }
 
+    // Setup listeners
     private void setupListeners() {
         fabEditImage.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
             imagePickerLauncher.launch(intent);
         });
 
@@ -126,7 +139,10 @@ public class ProfileFragment extends Fragment {
         btnUpdatePassword.setOnClickListener(v -> updatePassword());
     }
 
+    // Update profile logic
     private void updateProfile() {
+        if (currentUser == null) return;
+
         String firstName = etFirstName.getText().toString().trim();
         String lastName = etLastName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
@@ -150,9 +166,10 @@ public class ProfileFragment extends Fragment {
         currentUser.setImage(selectedImageUriStr);
 
         dbHelper.updateUser(currentUser);
-        Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Profile updated", Toast.LENGTH_SHORT).show();
     }
 
+    // Update password logic
     private void updatePassword() {
         String newPass = etNewPassword.getText().toString().trim();
         String confirmPass = etConfirmPassword.getText().toString().trim();
@@ -177,9 +194,10 @@ public class ProfileFragment extends Fragment {
         
         etNewPassword.setText("");
         etConfirmPassword.setText("");
-        Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Password updated", Toast.LENGTH_SHORT).show();
     }
 
+    // Hash password
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

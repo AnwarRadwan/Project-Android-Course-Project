@@ -1,8 +1,10 @@
 package com.example.a1222275_1220495_courseproject.fragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,19 +19,23 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.a1222275_1220495_courseproject.MainActivity;
 import com.example.a1222275_1220495_courseproject.R;
 import com.example.a1222275_1220495_courseproject.database.DataBaseHelper;
 import com.example.a1222275_1220495_courseproject.models.Trip;
-import com.example.a1222275_1220495_courseproject.models.User;
 import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+// Fragment for trip details
 public class TripDetailsFragment extends Fragment {
 
     private static final String ARG_TRIP_ID = "trip_id";
@@ -45,6 +51,7 @@ public class TripDetailsFragment extends Fragment {
 
     private boolean isFavorite = false;
 
+    // Create new instance
     public static TripDetailsFragment newInstance(int tripId) {
         TripDetailsFragment fragment = new TripDetailsFragment();
         Bundle args = new Bundle();
@@ -63,6 +70,7 @@ public class TripDetailsFragment extends Fragment {
         loadCurrentUser();
     }
 
+    // Get user from prefs
     private void loadCurrentUser() {
         SharedPreferences prefs = requireContext().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
         currentUserId = prefs.getLong("userId", -1);
@@ -71,6 +79,7 @@ public class TripDetailsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_trip_details, container, false);
 
         imgTripDetail = view.findViewById(R.id.imgTripDetail);
@@ -83,6 +92,7 @@ public class TripDetailsFragment extends Fragment {
         btnFavorite = view.findViewById(R.id.btnFavorite);
         btnReserve = view.findViewById(R.id.btnReserve);
 
+        // Load trip
         trip = dbHelper.getTripById(tripId);
         if (trip != null) {
             bindData();
@@ -93,6 +103,7 @@ public class TripDetailsFragment extends Fragment {
         return view;
     }
 
+    // Set data to UI
     private void bindData() {
         tvDestination.setText("Destination: " + trip.getDestination());
         tvCountry.setText("Country: " + trip.getCountry());
@@ -101,6 +112,7 @@ public class TripDetailsFragment extends Fragment {
         tvRating.setText("Rating: " + trip.getRating());
         tvDescription.setText(trip.getDescription());
 
+        // Load image
         Glide.with(this)
                 .load(trip.getImage())
                 .placeholder(R.color.light_gray)
@@ -112,21 +124,22 @@ public class TripDetailsFragment extends Fragment {
         }
     }
 
+    // Set click listeners
     private void setupListeners() {
         btnFavorite.setOnClickListener(v -> {
             if (currentUserId == -1) {
-                Toast.makeText(getContext(), "Please login to favorite trips", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (isFavorite) {
                 dbHelper.removeFavorite((int) currentUserId, tripId);
                 isFavorite = false;
-                Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Removed", Toast.LENGTH_SHORT).show();
             } else {
                 dbHelper.addFavorite((int) currentUserId, tripId);
                 isFavorite = true;
-                Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Added", Toast.LENGTH_SHORT).show();
             }
             updateFavoriteIcon();
         });
@@ -134,6 +147,7 @@ public class TripDetailsFragment extends Fragment {
         btnReserve.setOnClickListener(v -> showReservationDialog());
     }
 
+    // Update icon
     private void updateFavoriteIcon() {
         if (isFavorite) {
             btnFavorite.setImageResource(android.R.drawable.btn_star_big_on);
@@ -142,9 +156,10 @@ public class TripDetailsFragment extends Fragment {
         }
     }
 
+    // Show reserve dialog
     private void showReservationDialog() {
         if (currentUserId == -1) {
-            Toast.makeText(getContext(), "Please login to make a reservation", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -163,6 +178,7 @@ public class TripDetailsFragment extends Fragment {
 
         AlertDialog dialog = builder.create();
 
+        // Confirm button
         btnConfirm.setOnClickListener(v -> {
             String qtyStr = etQuantity.getText().toString();
             if (qtyStr.isEmpty()) {
@@ -174,12 +190,32 @@ public class TripDetailsFragment extends Fragment {
             String type = spinnerType.getSelectedItem().toString();
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-            dbHelper.insertReservation(currentUserId, tripId, quantity, type, date, "Pending");
+            boolean success = dbHelper.insertReservation(currentUserId, tripId, quantity, type, date, "Pending");
 
-            Toast.makeText(getContext(), "Reservation successful!", Toast.LENGTH_LONG).show();
-            dialog.dismiss();
+            if (success) {
+                sendReservationNotification(trip.getDestination(), date);
+                Toast.makeText(getContext(), "Successful!", Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            } else {
+                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+            }
         });
 
         dialog.show();
+    }
+
+    // Send notification
+    private void sendReservationNotification(String destination, String date) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), MainActivity.CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle("Reservation Confirmed")
+                .setContentText("Your trip to " + destination + " on " + date + " has been booked.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+        }
     }
 }

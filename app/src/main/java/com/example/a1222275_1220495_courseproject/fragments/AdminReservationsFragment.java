@@ -21,6 +21,7 @@ import com.example.a1222275_1220495_courseproject.models.AdminReservation;
 
 import java.util.List;
 
+// Fragment for admin to manage all reservations
 public class AdminReservationsFragment extends Fragment implements AdminReservationAdapter.OnReservationActionListener {
 
     private RecyclerView rvReservations;
@@ -31,6 +32,7 @@ public class AdminReservationsFragment extends Fragment implements AdminReservat
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_admin_reservations, container, false);
 
         try {
@@ -41,12 +43,13 @@ public class AdminReservationsFragment extends Fragment implements AdminReservat
 
             loadReservations();
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Initialization Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
         return view;
     }
 
+    // Load reservations from db
     private void loadReservations() {
         try {
             List<AdminReservation> reservations = dbHelper.getAllAdminReservations();
@@ -64,41 +67,43 @@ public class AdminReservationsFragment extends Fragment implements AdminReservat
                 }
             }
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Error loading reservations: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
+    // Update status action
     @Override
     public void onUpdateStatus(AdminReservation reservation) {
         String[] statuses = {"Pending", "Confirmed", "Cancelled"};
         
         new AlertDialog.Builder(requireContext())
-                .setTitle("Update Reservation Status")
+                .setTitle("Update Status")
                 .setItems(statuses, (dialog, which) -> {
                     try {
                         String selectedStatus = statuses[which];
                         dbHelper.updateReservationStatus(reservation.getReservationId(), selectedStatus);
-                        Toast.makeText(getContext(), "Status updated to " + selectedStatus, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
                         loadReservations();
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
     }
 
+    // Delete reservation action
     @Override
     public void onDelete(AdminReservation reservation) {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Delete Reservation")
-                .setMessage("Are you sure you want to delete this reservation?")
+                .setTitle("Delete")
+                .setMessage("Are you sure?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     try {
                         dbHelper.deleteReservation(reservation.getReservationId());
-                        Toast.makeText(getContext(), "Reservation deleted successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
                         loadReservations();
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("Cancel", null)

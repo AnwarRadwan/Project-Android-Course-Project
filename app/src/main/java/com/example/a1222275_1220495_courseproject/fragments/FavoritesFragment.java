@@ -31,10 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * FavoritesFragment: Displays a list of trips that the user has marked as favorites.
- * Implements OnFavoriteActionListener to handle remove and reserve actions.
- */
+// Fragment for favorite trips
 public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFavoriteActionListener {
 
     private RecyclerView rvFavorites;
@@ -47,6 +44,7 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         rvFavorites = view.findViewById(R.id.rvFavorites);
@@ -55,11 +53,13 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
 
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Load data
         loadFavorites();
 
         return view;
     }
 
+    // Load favorites from db
     private void loadFavorites() {
         SharedPreferences prefs = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
         currentUserId = prefs.getLong("userId", -1);
@@ -76,6 +76,7 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
         rvFavorites.setAdapter(adapter);
     }
 
+    // Update empty state visibility
     private void updateUI() {
         if (favoriteTrips == null || favoriteTrips.isEmpty()) {
             rvFavorites.setVisibility(View.GONE);
@@ -86,6 +87,7 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
         }
     }
 
+    // Remove favorite action
     @Override
     public void onRemove(Trip trip, int position) {
         if (currentUserId != -1) {
@@ -93,18 +95,20 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
             favoriteTrips.remove(position);
             adapter.notifyItemRemoved(position);
             updateUI();
-            Toast.makeText(getContext(), trip.getDestination() + " removed from favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Removed", Toast.LENGTH_SHORT).show();
         }
     }
 
+    // Reserve action
     @Override
     public void onReserve(Trip trip) {
         showReservationDialog(trip);
     }
 
+    // Show reservation dialog
     private void showReservationDialog(Trip trip) {
         if (currentUserId == -1) {
-            Toast.makeText(getContext(), "Please login to make a reservation", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -123,6 +127,7 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
 
         AlertDialog dialog = builder.create();
 
+        // Handle confirm click
         btnConfirm.setOnClickListener(v -> {
             String qtyStr = etQuantity.getText().toString().trim();
             if (qtyStr.isEmpty()) {
@@ -138,13 +143,13 @@ public class FavoritesFragment extends Fragment implements FavoriteAdapter.OnFav
                 boolean success = dbHelper.insertReservation(currentUserId, trip.getTripId(), quantity, type, date, "Pending");
 
                 if (success) {
-                    Toast.makeText(getContext(), "Reservation saved successfully for " + trip.getDestination(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Reserved", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(getContext(), "Error saving reservation to database", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
-                Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Error", Toast.LENGTH_LONG).show();
             }
         });
 

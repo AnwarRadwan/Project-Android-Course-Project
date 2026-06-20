@@ -25,6 +25,11 @@
     <string name="category_label">Major/Category</string>
     <string name="btn_register">Sign Up</string>
 
+    <!-- Home Fragment -->
+    <string name="home_welcome_title">Welcome to Travel Planner</string>
+    <string name="home_description">Your ultimate companion for discovering and booking the best trips around the world. Browse through our curated destinations, manage your reservations, and find special offers tailored just for you.</string>
+    <string name="home_explore_trips">Explore Trips</string>
+
     <!-- Error Messages -->
     <string name="err_invalid_email">Invalid email format</string>
     <string name="err_short_name">Minimum 3 characters</string>

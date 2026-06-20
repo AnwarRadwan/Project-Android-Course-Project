@@ -19,6 +19,7 @@ import com.example.a1222275_1220495_courseproject.models.Trip;
 import java.util.ArrayList;
 import java.util.List;
 
+// Fragment for home screen
 public class HomeFragment extends Fragment implements TripAdapter.OnTripClickListener {
 
     private RecyclerView rvTrips;
@@ -29,6 +30,7 @@ public class HomeFragment extends Fragment implements TripAdapter.OnTripClickLis
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         rvTrips = view.findViewById(R.id.rvTrips);
@@ -36,7 +38,7 @@ public class HomeFragment extends Fragment implements TripAdapter.OnTripClickLis
 
         dbHelper = new DataBaseHelper(getContext());
         
-        // جلب ID المستخدم المسجل حالياً
+        // Get current user id
         SharedPreferences prefs = requireContext().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
         userId = prefs.getLong("userId", -1);
 
@@ -45,16 +47,18 @@ public class HomeFragment extends Fragment implements TripAdapter.OnTripClickLis
         return view;
     }
 
+    // Load trips from db
     private void loadTrips() {
         List<Trip> trips = dbHelper.getAllTrips();
         adapter = new TripAdapter(trips, this);
         
-        // جلب قائمة الرحلات المفضلة للمستخدم الحالي لتلوين القلوب
+        // Update favorites
         refreshFavorites();
         
         rvTrips.setAdapter(adapter);
     }
 
+    // Refresh favorite items
     private void refreshFavorites() {
         List<Trip> favTrips = dbHelper.getFavoritesByUser(userId);
         List<Long> favIds = new ArrayList<>();
@@ -64,9 +68,9 @@ public class HomeFragment extends Fragment implements TripAdapter.OnTripClickLis
         adapter.setFavoriteTripIds(favIds);
     }
 
+    // Handle trip click
     @Override
     public void onTripClick(Trip trip) {
-        // الانتقال لصفحة التفاصيل عند الضغط على الرحلة
         TripDetailsFragment detailsFragment = TripDetailsFragment.newInstance((int) trip.getTripId());
         getParentFragmentManager()
                 .beginTransaction()
@@ -75,6 +79,7 @@ public class HomeFragment extends Fragment implements TripAdapter.OnTripClickLis
                 .commit();
     }
 
+    // Handle favorite click
     @Override
     public void onFavoriteClick(Trip trip) {
         if (userId == -1) {
@@ -84,12 +89,11 @@ public class HomeFragment extends Fragment implements TripAdapter.OnTripClickLis
 
         if (dbHelper.isFavorite((int) userId, (int) trip.getTripId())) {
             dbHelper.removeFavorite(userId, trip.getTripId());
-            Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Removed", Toast.LENGTH_SHORT).show();
         } else {
             dbHelper.addFavorite((int) userId, (int) trip.getTripId());
-            Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Added", Toast.LENGTH_SHORT).show();
         }
-        // تحديث القلوب في الصفحة
         refreshFavorites();
     }
 }

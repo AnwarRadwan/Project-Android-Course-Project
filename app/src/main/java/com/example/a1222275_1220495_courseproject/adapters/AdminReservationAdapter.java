@@ -14,11 +14,13 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
+// Adapter for admin reservations
 public class AdminReservationAdapter extends RecyclerView.Adapter<AdminReservationAdapter.AdminResViewHolder> {
 
     private List<AdminReservation> reservationList;
     private OnReservationActionListener listener;
 
+    // Interface for actions
     public interface OnReservationActionListener {
         void onUpdateStatus(AdminReservation reservation);
         void onDelete(AdminReservation reservation);
@@ -32,6 +34,7 @@ public class AdminReservationAdapter extends RecyclerView.Adapter<AdminReservati
     @NonNull
     @Override
     public AdminResViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate view
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_admin_reservation, parent, false);
         return new AdminResViewHolder(view);
     }
@@ -39,6 +42,7 @@ public class AdminReservationAdapter extends RecyclerView.Adapter<AdminReservati
     @Override
     public void onBindViewHolder(@NonNull AdminResViewHolder holder, int position) {
         AdminReservation reservation = reservationList.get(position);
+        // Set data
         holder.tvTripName.setText(reservation.getTripName());
         holder.tvStatus.setText(reservation.getStatus());
         holder.tvUserName.setText("User: " + reservation.getUserName());
@@ -46,7 +50,9 @@ public class AdminReservationAdapter extends RecyclerView.Adapter<AdminReservati
         holder.tvQuantity.setText("Qty: " + reservation.getQuantity());
         holder.tvType.setText("Type: " + reservation.getReservationType());
 
+        // Update click
         holder.btnUpdateStatus.setOnClickListener(v -> listener.onUpdateStatus(reservation));
+        // Delete click
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(reservation));
     }
 
@@ -55,11 +61,13 @@ public class AdminReservationAdapter extends RecyclerView.Adapter<AdminReservati
         return reservationList.size();
     }
 
+    // Refresh data
     public void updateList(List<AdminReservation> newList) {
         this.reservationList = newList;
         notifyDataSetChanged();
     }
 
+    // ViewHolder class
     static class AdminResViewHolder extends RecyclerView.ViewHolder {
         TextView tvTripName, tvStatus, tvUserName, tvDate, tvQuantity, tvType;
         MaterialButton btnUpdateStatus, btnDelete;

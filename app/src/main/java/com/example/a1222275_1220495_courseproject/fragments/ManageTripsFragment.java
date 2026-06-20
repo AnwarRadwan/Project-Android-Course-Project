@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+// Fragment for admin to manage trips
 public class ManageTripsFragment extends Fragment implements AdminTripAdapter.OnTripActionListener {
 
     private RecyclerView rvTrips;
@@ -33,6 +34,7 @@ public class ManageTripsFragment extends Fragment implements AdminTripAdapter.On
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_manage_trips, container, false);
 
         dbHelper = new DataBaseHelper(requireContext());
@@ -41,6 +43,7 @@ public class ManageTripsFragment extends Fragment implements AdminTripAdapter.On
 
         rvTrips.setLayoutManager(new LinearLayoutManager(getContext()));
         
+        // Add trip button
         fabAddTrip.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), AddEditTripActivity.class);
             startActivity(intent);
@@ -55,6 +58,7 @@ public class ManageTripsFragment extends Fragment implements AdminTripAdapter.On
         loadTrips();
     }
 
+    // Load trips from db
     private void loadTrips() {
         List<Trip> trips = dbHelper.getAllTrips();
         if (adapter == null) {
@@ -65,6 +69,7 @@ public class ManageTripsFragment extends Fragment implements AdminTripAdapter.On
         }
     }
 
+    // Edit trip action
     @Override
     public void onEdit(Trip trip) {
         Intent intent = new Intent(getActivity(), AddEditTripActivity.class);
@@ -72,14 +77,15 @@ public class ManageTripsFragment extends Fragment implements AdminTripAdapter.On
         startActivity(intent);
     }
 
+    // Delete trip action
     @Override
     public void onDelete(Trip trip) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Delete Trip")
-                .setMessage("Are you sure you want to delete the trip to " + trip.getDestination() + "?")
+                .setMessage("Are you sure?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     dbHelper.deleteTrip(trip.getTripId());
-                    Toast.makeText(getContext(), "Trip deleted successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
                     loadTrips();
                 })
                 .setNegativeButton("Cancel", null)

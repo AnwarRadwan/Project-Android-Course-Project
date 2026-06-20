@@ -21,6 +21,7 @@ import com.example.a1222275_1220495_courseproject.models.AdminReservation;
 
 import java.util.List;
 
+// Fragment to view all reservations
 public class ViewReservationsFragment extends Fragment implements AdminReservationAdapter.OnReservationActionListener {
 
     private RecyclerView rvReservations;
@@ -31,6 +32,7 @@ public class ViewReservationsFragment extends Fragment implements AdminReservati
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate view
         View view = inflater.inflate(R.layout.fragment_admin_reservations, container, false);
 
         dbHelper = new DataBaseHelper(requireContext());
@@ -43,6 +45,7 @@ public class ViewReservationsFragment extends Fragment implements AdminReservati
         return view;
     }
 
+    // Load reservations from db
     private void loadReservations() {
         try {
             List<AdminReservation> reservations = dbHelper.getAllAdminReservations();
@@ -60,33 +63,35 @@ public class ViewReservationsFragment extends Fragment implements AdminReservati
                 }
             }
         } catch (Exception e) {
-            Toast.makeText(getContext(), "Error loading reservations: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
+    // Update status action
     @Override
     public void onUpdateStatus(AdminReservation reservation) {
         String[] statuses = {"Pending", "Confirmed", "Cancelled"};
         
         new AlertDialog.Builder(requireContext())
-                .setTitle("Update Reservation Status")
+                .setTitle("Update Status")
                 .setItems(statuses, (dialog, which) -> {
                     String selectedStatus = statuses[which];
                     dbHelper.updateReservationStatus(reservation.getReservationId(), selectedStatus);
-                    Toast.makeText(getContext(), "Status updated to " + selectedStatus, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT).show();
                     loadReservations();
                 })
                 .show();
     }
 
+    // Delete reservation action
     @Override
     public void onDelete(AdminReservation reservation) {
         new AlertDialog.Builder(requireContext())
-                .setTitle("Delete Reservation")
-                .setMessage("Are you sure you want to delete this reservation?")
+                .setTitle("Delete")
+                .setMessage("Are you sure?")
                 .setPositiveButton("Delete", (dialog, which) -> {
                     dbHelper.deleteReservation(reservation.getReservationId());
-                    Toast.makeText(getContext(), "Reservation deleted successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
                     loadReservations();
                 })
                 .setNegativeButton("Cancel", null)
