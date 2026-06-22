@@ -190,27 +190,25 @@ public class TripDetailsFragment extends Fragment {
             String type = spinnerType.getSelectedItem().toString();
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
-            boolean success = dbHelper.insertReservation(currentUserId, tripId, quantity, type, date, "Pending");
-
-            if (success) {
-                sendReservationNotification(trip.getDestination(), date);
-                Toast.makeText(getContext(), "Successful!", Toast.LENGTH_LONG).show();
-                dialog.dismiss();
-            } else {
-                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-            }
+            // Check if dbHelper has a method to insert reservation with boolean return or just void
+            // In DataBaseHelper.java it was void. Let's fix this.
+            dbHelper.insertReservation(currentUserId, tripId, quantity, type, date, "Pending");
+            sendReservationNotification(trip.getDestination(), date);
+            Toast.makeText(getContext(), "Successful!", Toast.LENGTH_LONG).show();
+            dialog.dismiss();
         });
 
         dialog.show();
     }
 
-    // Send notification
+    // Send notification silently
     private void sendReservationNotification(String destination, String date) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), MainActivity.CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle("Reservation Confirmed")
                 .setContentText("Your trip to " + destination + " on " + date + " has been booked.")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_LOW) // Silent priority
+                .setSound(null) // No sound
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());

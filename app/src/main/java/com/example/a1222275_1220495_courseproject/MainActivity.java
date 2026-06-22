@@ -62,14 +62,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    // Notification channel setup
+    // Notification channel setup - Set importance to LOW to avoid sound
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Travel Planner Channel";
             String description = "Notifications for Travel Planner";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_LOW; // Low importance = No sound
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
+            channel.setSound(null, null); // Double check sound is off
+            channel.enableVibration(false);
+
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);

@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String KEY_EMAIL = "remember_email";
     private static final String KEY_USER_ID = "userId";
 
-    // Hardcoded admin
+    // Hardcoded admin for emergency access
     private static final String ADMIN_EMAIL = "admin@admin.com";
     private static final String ADMIN_PASSWORD = "Admin123!";
 
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Admin login check
+        // 1. Emergency Admin login check (Hardcoded)
         if (email.equals(ADMIN_EMAIL) && password.equals(ADMIN_PASSWORD)) {
             sendWelcomeNotification("Admin");
             Toast.makeText(this, "Admin Login Successful", Toast.LENGTH_SHORT).show();
@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // User login check
+        // 2. Regular User/Admin login check from Database
         User user = dbHelper.getUserByEmail(email);
         if (user != null) {
             String hashedPassword = hashPassword(password);
@@ -125,8 +125,15 @@ public class LoginActivity extends AppCompatActivity {
 
                 sendWelcomeNotification(user.getFirstName());
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
+
+                // Check category to decide which screen to open
+                if ("Admin".equalsIgnoreCase(user.getCategory())) {
+                    Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
                 finish();
             } else {
                 Toast.makeText(this, getString(R.string.err_login_failed), Toast.LENGTH_SHORT).show();
@@ -136,13 +143,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Send notification
+    // Send notification silently
     private void sendWelcomeNotification(String name) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, MainActivity.CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle("Welcome Back!")
                 .setContentText("Hello " + name + ", we're glad to see you again!")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_LOW) // Silent priority
+                .setSound(null) // No sound
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
