@@ -5,13 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.a1222275_1220495_courseproject.models.User;
 import com.example.a1222275_1220495_courseproject.models.Trip;
 import com.example.a1222275_1220495_courseproject.models.Reservation;
 import com.example.a1222275_1220495_courseproject.models.AdminReservation;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "TravelGo.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3; // Incremented to v3 for unique passwords
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,7 +37,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop and recreate tables
+        // Drop and recreate tables to ensure fresh test data with new passwords
         db.execSQL("DROP TABLE IF EXISTS USERS");
         db.execSQL("DROP TABLE IF EXISTS TRIPS");
         db.execSQL("DROP TABLE IF EXISTS RESERVATIONS");
@@ -59,7 +60,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert("USERS", null, values);
     }
 
-    // Insert test data
+    // Insert test data with Yousef, Anwar, and Ahmad using unique passwords
     public void insertTestUsers() {
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM USERS", null);
@@ -67,12 +68,42 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         int count = cursor.getInt(0);
         cursor.close();
 
-        if (count == 0) {
-            User admin = new User(-1, "admin@travelgo.com", "Admin", "User", "admin123", "Male", "Admin", "123456789", null);
-            insertUser(admin);
-            
-            User user = new User(-1, "user@example.com", "John", "Doe", "user123", "Male", "User", "987654321", null);
-            insertUser(user);
+        // Check if we need to insert the initial users
+        if (count <= 2) {
+            // Add Admin
+            if (getUserByEmail("admin@travelgo.com") == null) {
+                insertUser(new User(-1, "admin@travelgo.com", "Admin", "User", hashPassword("admin123"), "Male", "Admin", "123456789", null));
+            }
+
+            // Yousef -> y12345
+            if (getUserByEmail("yousef@travelgo.com") == null) {
+                insertUser(new User(-1, "yousef@travelgo.com", "Yousef", "Hilal", hashPassword("y12345"), "Male", "User", "0599111222", null));
+            }
+            // Anwar -> a12345
+            if (getUserByEmail("anwar@travelgo.com") == null) {
+                insertUser(new User(-1, "anwar@travelgo.com", "Anwar", "Ali", hashPassword("a12345"), "Male", "User", "0599333444", null));
+            }
+            // Ahmad -> ah12345
+            if (getUserByEmail("ahmad@travelgo.com") == null) {
+                insertUser(new User(-1, "ahmad@travelgo.com", "Ahmad", "Saleh", hashPassword("ah12345"), "Male", "User", "0599555666", null));
+            }
+        }
+    }
+
+    // Helper to hash password using SHA-256
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return password;
         }
     }
 

@@ -14,6 +14,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.a1222275_1220495_courseproject.database.DataBaseHelper;
 import com.example.a1222275_1220495_courseproject.fragments.AdminHomeFragment;
 import com.example.a1222275_1220495_courseproject.fragments.ManageTripsFragment;
 import com.example.a1222275_1220495_courseproject.fragments.AdminReservationsFragment;
@@ -24,11 +25,16 @@ import com.google.android.material.navigation.NavigationView;
 public class AdminDashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawerLayout;
+    private DataBaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_dashboard);
+
+        // Initialize database and insert test users if they don't exist
+        dbHelper = new DataBaseHelper(this);
+        dbHelper.insertTestUsers();
 
         // Setup toolbar
         Toolbar toolbar = findViewById(R.id.admin_toolbar);

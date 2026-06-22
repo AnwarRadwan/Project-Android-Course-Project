@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                 // Save session
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putLong(KEY_USER_ID, user.getId());
-                
+
                 if (cbRememberMe.isChecked()) {
                     editor.putString(KEY_EMAIL, email);
                 } else {
